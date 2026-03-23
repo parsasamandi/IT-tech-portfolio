@@ -1,0 +1,158 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { ArrowRight, ChevronDown, Sparkles, Code, Cpu, Globe, Database, Layers, Monitor } from "lucide-react";
+
+const TYPED_WORDS = [
+  "Mission-Critical Apps",
+  "Cloud Infrastructures",
+  "Sleek Web Solutions",
+  "Intelligent AI Logic",
+  "High-Performance Tech"
+];
+
+export default function Hero() {
+  const [currentWord, setCurrentWord] = useState(0);
+  const [displayText, setDisplayText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (isPaused) return;
+    const word = TYPED_WORDS[currentWord];
+    const speed = isDeleting ? 30 : 60;
+    const timeout = setTimeout(() => {
+      if (!isDeleting) {
+        const next = word.substring(0, displayText.length + 1);
+        setDisplayText(next);
+        if (next === word) {
+          setIsPaused(true);
+          setTimeout(() => { setIsPaused(false); setIsDeleting(true); }, 2000);
+        }
+      } else {
+        const next = word.substring(0, displayText.length - 1);
+        setDisplayText(next);
+        if (next === "") {
+          setIsDeleting(false);
+          setCurrentWord((p) => (p + 1) % TYPED_WORDS.length);
+        }
+      }
+    }, speed);
+    return () => clearTimeout(timeout);
+  }, [displayText, isDeleting, currentWord, isPaused]);
+
+  const floatingIcons = [
+    { Icon: Code, top: "20%", left: "15%", delay: 0 },
+    { Icon: Cpu, top: "60%", left: "10%", delay: 2 },
+    { Icon: Globe, top: "30%", right: "20%", delay: 1 },
+    { Icon: Database, top: "70%", right: "15%", delay: 3 },
+    { Icon: Layers, top: "15%", right: "35%", delay: 1.5 },
+    { Icon: Monitor, top: "80%", left: "30%", delay: 2.5 },
+  ];
+
+  return (
+    <section id="home" className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-navy-50 px-6">
+      {/* Background Layer */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 dot-pattern opacity-30" />
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-crimson-100/30 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-navy-100/40 rounded-full blur-[140px] animate-pulse" style={{ animationDelay: "2s" }} />
+
+        {/* Floating Icons */}
+        {floatingIcons.map((item, index) => (
+          <motion.div
+            key={index}
+            className="absolute text-navy-200/40"
+            style={{ top: item.top, left: item.left, right: item.right }}
+            animate={{
+              y: [0, -30, 0],
+              rotate: [0, 15, -15, 0],
+              opacity: [0.3, 0.6, 0.3],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: item.delay,
+            }}
+          >
+            <item.Icon className="w-16 h-16 sm:w-20 sm:h-20" strokeWidth={1} />
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Hero Content - Forced Centering */}
+      <div className="relative z-10 w-full max-w-5xl flex flex-col items-center text-center py-20 mt-10">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="inline-flex items-center gap-2 mb-10 px-5 py-2.5 rounded-full glass-card border border-white/60 shadow-md text-navy-900"
+        >
+          <Sparkles className="w-4 h-4 text-crimson-600" />
+          <span className="text-[13px] font-bold text-navy-600 tracking-wide uppercase">Engineering the Digital Future</span>
+        </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-navy-900 leading-[1.05] tracking-tight mb-8"
+          style={{ fontFamily: "var(--font-heading)" }}
+        >
+          We Build <span className="text-crimson-600 glow-crimson">Innovative</span><br />
+          <span className="inline-block gradient-text-hero min-h-[1em]">
+            {displayText}<span className="typing-cursor" />
+          </span>
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="max-w-2xl mx-auto text-lg md:text-xl text-navy-600 leading-relaxed mb-12"
+        >
+          Premium technology solutions designed for scale and performance. We transform your most ambitious concepts into polished digital realities.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="flex flex-col sm:flex-row items-center gap-4"
+        >
+          <a href="#projects" className="px-10 py-4 text-base font-bold text-white rounded-2xl gradient-primary gradient-primary-hover shadow-xl shadow-crimson-600/30 hover:-translate-y-1 transition-all duration-300 flex items-center gap-2">
+            View Our Work <ArrowRight className="w-5 h-5" />
+          </a>
+          <a href="#contact" className="px-10 py-4 text-base font-bold text-navy-900 rounded-2xl bg-white border border-navy-200 card-shadow-hover hover:-translate-y-1 transition-all duration-300">
+            Get in Touch
+          </a>
+        </motion.div>
+
+        {/* Tech Badges */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 1.2 }}
+          className="mt-20 flex flex-wrap justify-center gap-3 opacity-60"
+        >
+          {["React", "Next.js", "TypeScript", "AWS", "Node", "Docker"].map((tech) => (
+            <span key={tech} className="px-4 py-2 text-xs font-black text-navy-900 bg-white border border-navy-200 rounded-lg shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-crimson-200 transition-all duration-300 cursor-default">
+              {tech}
+            </span>
+          ))}
+        </motion.div>
+      </div>
+
+      <motion.div
+        animate={{ y: [0, 10, 0] }}
+        transition={{ duration: 2, repeat: Infinity }}
+        className="absolute bottom-10 flex flex-col items-center gap-2 text-navy-400 opacity-50"
+      >
+        <span className="text-[10px] font-black tracking-widest uppercase">Scroll Down</span>
+        <ChevronDown className="w-5 h-5" />
+      </motion.div>
+    </section>
+  );
+}
