@@ -5,12 +5,24 @@
  *
  * List of contact form submissions with:
  * - Read/unread status indicators
- * - Message detail view in modal
- * - Delete action
+ * - Message detail view in a premium slide-in panel
+ * - Delete action with confirm modal
  * - Search and filter
  */
 import { useState, useEffect } from "react";
-import { Mail, MailOpen, Trash2, Search, Eye, Loader2 } from "lucide-react";
+import {
+  Mail,
+  MailOpen,
+  Trash2,
+  Search,
+  Inbox,
+  Loader2,
+  X,
+  Reply,
+  Clock,
+  AtSign,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 
 type Message = {
@@ -28,6 +40,7 @@ export default function AdminMessages() {
   const [selectedMessage, setSelectedMessage] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchMessages();
@@ -44,7 +57,6 @@ export default function AdminMessages() {
         .from("messages")
         .select("*")
         .order("created_at", { ascending: false });
-
       if (error) throw error;
       if (data) setMessages(data);
     } catch (error) {
@@ -62,15 +74,14 @@ export default function AdminMessages() {
   );
 
   const selectedMsg = messages.find((m) => m.id === selectedMessage);
+  const unreadCount = messages.filter((m) => !m.is_read).length;
 
   const markAsRead = async (id: string) => {
     const msg = messages.find((m) => m.id === id);
     if (msg && !msg.is_read) {
-      // Optimistic update
       setMessages((prev) =>
         prev.map((m) => (m.id === id ? { ...m, is_read: true } : m))
       );
-
       if (supabase) {
         try {
           await supabase.from("messages").update({ is_read: true }).eq("id", id);
@@ -81,162 +92,343 @@ export default function AdminMessages() {
     }
   };
 
-  const deleteMessage = async (id: string) => {
-    if (confirm("Are you sure you want to delete this message?")) {
-      // Optimistic update
-      setMessages((prev) => prev.filter((m) => m.id !== id));
-      if (selectedMessage === id) setSelectedMessage(null);
+  const confirmDelete = (id: string) => {
+    setDeleteConfirmId(id);
+  };
 
-      if (supabase) {
-        try {
-          await supabase.from("messages").delete().eq("id", id);
-        } catch (error) {
-          console.error("Error deleting message:", error);
-        }
+  const deleteMessage = async () => {
+    if (!deleteConfirmId) return;
+    const id = deleteConfirmId;
+    setMessages((prev) => prev.filter((m) => m.id !== id));
+    if (selectedMessage === id) setSelectedMessage(null);
+    setDeleteConfirmId(null);
+    if (supabase) {
+      try {
+        await supabase.from("messages").delete().eq("id", id);
+      } catch (error) {
+        console.error("Error deleting message:", error);
       }
     }
   };
 
+  const handleSelect = (id: string) => {
+    setSelectedMessage(id);
+    markAsRead(id);
+  };
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffHrs = diffMs / (1000 * 60 * 60);
+    if (diffHrs < 1) return "Just now";
+    if (diffHrs < 24) return `${Math.floor(diffHrs)}h ago`;
+    if (diffHrs < 48) return "Yesterday";
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  };
+
+  const formatFullDate = (dateStr: string) =>
+    new Date(dateStr).toLocaleString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+  const getInitials = (name: string) =>
+    name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .substring(0, 2)
+      .toUpperCase();
+
   return (
     <div className="page-transition">
       {/* Page Header */}
-      <div className="mb-8">
-        <h1
-          className="text-2xl md:text-3xl font-bold text-text-primary"
-          style={{ fontFamily: "var(--font-heading)" }}
-        >
-          Messages
-        </h1>
+      <div className="mb-6">
+        <div className="flex items-center gap-3">
+          <h1
+            className="text-2xl md:text-3xl font-bold text-text-primary"
+            style={{ fontFamily: "var(--font-heading)" }}
+          >
+            Messages
+          </h1>
+          {unreadCount > 0 && (
+            <span className="px-2.5 py-0.5 text-xs font-semibold text-white bg-crimson-500 rounded-full">
+              {unreadCount} new
+            </span>
+          )}
+        </div>
         <p className="text-text-secondary mt-1">
           Manage contact form submissions
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {/* Messages List */}
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 h-[calc(100vh-12rem)]">
+        {/* ── Left: Messages List ────────────────────────────────── */}
+        <div className="lg:col-span-2 flex flex-col gap-3 min-h-0">
           {/* Search */}
-          <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+          <div className="relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
             <input
               type="text"
-              placeholder="Search messages..."
+              placeholder="Search by name, subject, email…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 text-sm text-text-primary bg-white/5 
-                rounded-xl border border-white/10 outline-none focus:border-crimson-500/50 
-                placeholder:text-text-muted transition-colors"
+                rounded-xl border border-white/[0.08] outline-none 
+                focus:border-crimson-500/50 focus:ring-2 focus:ring-crimson-500/10
+                placeholder:text-text-muted/60 transition-all"
             />
           </div>
 
-          {/* Message List */}
-          <div className="space-y-2 glass rounded-2xl p-3 min-h-[400px]">
+          {/* List */}
+          <div className="flex-1 overflow-y-auto rounded-2xl bg-[#0e0e18]/60 border border-white/[0.06] p-2 space-y-1">
             {isLoading ? (
-              <div className="flex flex-col items-center justify-center h-full py-20 text-text-muted">
-                <Loader2 className="w-8 h-8 animate-spin mb-4 text-crimson-500" />
-                <p className="text-sm">Loading messages...</p>
+              <div className="flex flex-col items-center justify-center h-full py-16 text-text-muted">
+                <Loader2 className="w-7 h-7 animate-spin mb-3 text-crimson-500" />
+                <p className="text-sm">Loading messages…</p>
               </div>
             ) : filteredMessages.length === 0 ? (
-              <p className="text-center text-text-muted py-8 text-sm">
-                No messages found
-              </p>
+              <div className="flex flex-col items-center justify-center h-full py-16 text-text-muted">
+                <Inbox className="w-10 h-10 mb-3 opacity-30" />
+                <p className="text-sm font-medium">No messages</p>
+                <p className="text-xs mt-1 opacity-60">
+                  {searchQuery ? "Try a different search" : "Your inbox is empty"}
+                </p>
+              </div>
             ) : (
               filteredMessages.map((msg) => (
-                <button
+                <motion.button
                   key={msg.id}
-                  onClick={() => {
-                    setSelectedMessage(msg.id);
-                    markAsRead(msg.id);
-                  }}
-                  className={`w-full text-left p-3 rounded-xl transition-colors ${
+                  layout
+                  onClick={() => handleSelect(msg.id)}
+                  className={`w-full text-left px-3.5 py-3 rounded-xl transition-all duration-200 group ${
                     selectedMessage === msg.id
-                      ? "bg-crimson-500/10 border border-crimson-500/20"
+                      ? "bg-crimson-500/10 border border-crimson-500/25 shadow-sm"
                       : msg.is_read
-                      ? "hover:bg-white/5"
-                      : "bg-white/[0.03] hover:bg-white/[0.06] border-l-2 border-crimson-500"
+                      ? "hover:bg-white/[0.04] border border-transparent"
+                      : "bg-white/[0.025] hover:bg-white/[0.05] border-l-2 border-crimson-500 border-r border-t border-b border-r-transparent border-t-transparent border-b-transparent"
                   }`}
                 >
-                  <div className="flex items-center gap-2 mb-1">
-                    {msg.is_read ? (
-                      <MailOpen className="w-4 h-4 text-text-muted flex-shrink-0" />
-                    ) : (
-                      <Mail className="w-4 h-4 text-crimson-400 flex-shrink-0" />
+                  <div className="flex items-center gap-3">
+                    {/* Avatar */}
+                    <div
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold shrink-0
+                        ${msg.is_read
+                          ? "bg-white/[0.07] text-text-muted"
+                          : "bg-crimson-500/15 text-crimson-400 border border-crimson-500/20"
+                        }`}
+                    >
+                      {getInitials(msg.name)}
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <span
+                          className={`text-sm truncate ${msg.is_read ? "text-text-secondary font-normal" : "text-text-primary font-semibold"}`}
+                        >
+                          {msg.name}
+                        </span>
+                        <span className="text-[10px] text-text-muted shrink-0">
+                          {formatDate(msg.created_at)}
+                        </span>
+                      </div>
+                      <p
+                        className={`text-xs truncate mt-0.5 ${msg.is_read ? "text-text-muted" : "text-text-secondary"}`}
+                      >
+                        {msg.subject}
+                      </p>
+                    </div>
+
+                    {!msg.is_read && (
+                      <span className="w-2 h-2 rounded-full bg-crimson-500 shrink-0 shadow-lg shadow-crimson-500/50" />
                     )}
-                    <span className="text-sm font-medium text-text-primary truncate">
-                      {msg.name}
-                    </span>
                   </div>
-                  <p className="text-xs text-text-secondary truncate pl-6">
-                    {msg.subject}
-                  </p>
-                  <p className="text-[10px] text-text-muted pl-6 mt-1">
-                    {new Date(msg.created_at).toLocaleDateString()}
-                  </p>
-                </button>
+                </motion.button>
               ))
             )}
           </div>
         </div>
 
-        {/* Message Detail */}
-        <div className="lg:col-span-3">
-          {selectedMsg ? (
-            <div className="glass rounded-2xl p-6">
-              {/* Header */}
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <h2
-                    className="text-lg font-semibold text-text-primary"
-                    style={{ fontFamily: "var(--font-heading)" }}
-                  >
-                    {selectedMsg.subject}
-                  </h2>
-                  <p className="text-sm text-text-secondary mt-1">
-                    From: <span className="text-text-primary">{selectedMsg.name}</span>{" "}
-                    &lt;{selectedMsg.email}&gt;
-                  </p>
-                  <p className="text-xs text-text-muted mt-1">
-                    {new Date(selectedMsg.created_at).toLocaleString()}
-                  </p>
+        {/* ── Right: Message Detail ──────────────────────────────── */}
+        <div className="lg:col-span-3 min-h-0">
+          <AnimatePresence mode="wait">
+            {selectedMsg ? (
+              <motion.div
+                key={selectedMsg.id}
+                initial={{ opacity: 0, x: 12 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -12 }}
+                transition={{ duration: 0.2 }}
+                className="h-full flex flex-col bg-[#0e0e18]/60 border border-white/[0.06] rounded-2xl overflow-hidden"
+              >
+                {/* Detail Header */}
+                <div className="px-6 pt-5 pb-4 border-b border-white/[0.06]">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      {/* Large Avatar */}
+                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-crimson-500/20 to-navy-700/50 border border-crimson-500/20 flex items-center justify-center text-sm font-bold text-crimson-400 shrink-0">
+                        {getInitials(selectedMsg.name)}
+                      </div>
+                      <div>
+                        <h2
+                          className="text-base font-bold text-text-primary leading-none"
+                          style={{ fontFamily: "var(--font-heading)" }}
+                        >
+                          {selectedMsg.subject}
+                        </h2>
+                        <div className="flex items-center gap-3 mt-1.5">
+                          <span className="flex items-center gap-1 text-xs text-text-secondary">
+                            <span className="font-medium text-text-primary">
+                              {selectedMsg.name}
+                            </span>
+                          </span>
+                          <span className="flex items-center gap-1 text-xs text-text-muted">
+                            <AtSign className="w-3 h-3" />
+                            {selectedMsg.email}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1 text-[11px] text-text-muted mt-1">
+                          <Clock className="w-3 h-3" />
+                          {formatFullDate(selectedMsg.created_at)}
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => confirmDelete(selectedMsg.id)}
+                      className="w-8 h-8 rounded-xl bg-white/[0.04] hover:bg-red-500/10 flex items-center justify-center 
+                        text-text-muted hover:text-red-400 transition-all shrink-0"
+                      aria-label="Delete message"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
-                <button
-                  onClick={() => deleteMessage(selectedMsg.id)}
-                  className="w-9 h-9 rounded-lg flex items-center justify-center 
-                    text-text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors"
-                  aria-label="Delete message"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
 
-              {/* Message Body */}
-              <div className="bg-white/[0.02] rounded-xl p-5 border border-white/5">
-                <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-wrap">
-                  {selectedMsg.message}
+                {/* Message Body */}
+                <div className="flex-1 overflow-y-auto px-6 py-5">
+                  <div className="bg-white/[0.025] rounded-2xl p-5 border border-white/[0.05]">
+                    <div className="flex items-center gap-2 mb-3 text-xs text-text-muted">
+                      <Mail className="w-3.5 h-3.5" />
+                      Message
+                    </div>
+                    <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-wrap">
+                      {selectedMsg.message}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Actions Footer */}
+                <div className="px-6 py-4 border-t border-white/[0.06] flex items-center justify-between">
+                  <button
+                    onClick={() => setSelectedMessage(null)}
+                    className="flex items-center gap-1.5 text-sm text-text-muted hover:text-text-secondary transition-colors lg:hidden"
+                  >
+                    <X className="w-4 h-4" />
+                    Close
+                  </button>
+                  <div className="flex gap-3 ml-auto">
+                    <button
+                      onClick={() => confirmDelete(selectedMsg.id)}
+                      className="px-4 py-2 text-sm font-medium text-red-400 rounded-xl 
+                        border border-red-500/20 hover:bg-red-500/10 transition-all"
+                    >
+                      Delete
+                    </button>
+                    <motion.a
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.97 }}
+                      href={`mailto:${selectedMsg.email}?subject=Re: ${selectedMsg.subject}`}
+                      className="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white rounded-xl 
+                        gradient-primary hover:opacity-90 transition-opacity
+                        shadow-lg shadow-crimson-600/20"
+                    >
+                      <Reply className="w-4 h-4" />
+                      Reply
+                    </motion.a>
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="h-full flex flex-col items-center justify-center 
+                  bg-[#0e0e18]/40 border border-white/[0.06] rounded-2xl
+                  text-text-muted"
+              >
+                <div className="w-16 h-16 rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mb-4">
+                  <MailOpen className="w-7 h-7 opacity-40" />
+                </div>
+                <p className="text-sm font-medium">No message selected</p>
+                <p className="text-xs mt-1 opacity-60">
+                  Pick a conversation from the left
                 </p>
-              </div>
-
-              {/* Actions */}
-              <div className="mt-6 flex gap-3">
-                <a
-                  href={`mailto:${selectedMsg.email}?subject=Re: ${selectedMsg.subject}`}
-                  className="px-5 py-2.5 text-sm font-medium text-white rounded-xl gradient-primary 
-                    hover:opacity-90 transition-opacity shadow-lg shadow-crimson-600/20"
-                >
-                  Reply via Email
-                </a>
-              </div>
-            </div>
-          ) : (
-            <div className="glass rounded-2xl p-12 text-center h-full flex flex-col items-center justify-center min-h-[400px]">
-              <Eye className="w-12 h-12 text-text-muted mx-auto mb-4" />
-              <p className="text-text-secondary">
-                Select a message to view details
-              </p>
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
+
+      {/* ─── Delete Confirm Modal ──────────────────────────────────── */}
+      <AnimatePresence>
+        {deleteConfirmId && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              className="absolute inset-0 bg-black/70 backdrop-blur-md"
+              onClick={() => setDeleteConfirmId(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 16 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative w-full max-w-sm"
+            >
+              <div className="bg-[#141420] border border-white/[0.08] rounded-2xl p-6 shadow-2xl">
+                <div className="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-4 mx-auto">
+                  <Trash2 className="w-6 h-6 text-red-400" />
+                </div>
+                <h3
+                  className="text-base font-semibold text-text-primary text-center mb-1"
+                  style={{ fontFamily: "var(--font-heading)" }}
+                >
+                  Delete Message
+                </h3>
+                <p className="text-sm text-text-secondary text-center mb-6">
+                  This message will be permanently deleted and cannot be recovered.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setDeleteConfirmId(null)}
+                    className="flex-1 px-4 py-2.5 text-sm font-medium text-text-secondary rounded-xl border border-white/10 hover:bg-white/5 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={deleteMessage}
+                    className="flex-1 px-4 py-2.5 text-sm font-semibold text-white rounded-xl bg-red-500 hover:bg-red-600 transition-colors shadow-lg shadow-red-600/20"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

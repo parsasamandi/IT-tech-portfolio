@@ -5,10 +5,10 @@
  *
  * CRUD management for portfolio projects:
  * - Project list with edit/delete actions
- * - Add/edit form modal
+ * - Add/edit form modal (premium redesign)
  * - Category and tag management
  */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Plus,
   Pencil,
@@ -18,11 +18,30 @@ import {
   Github,
   Layers,
   Loader2,
+  Star,
+  Tag,
+  Link,
+  Image,
+  AlignLeft,
+  Type,
+  ChevronDown,
+  Check,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import type { Project } from "@/lib/types";
 import { supabase } from "@/lib/supabase";
 
-/** Empty project template for new entries */
+const CATEGORIES = ["Web Apps", "Mobile", "Cloud", "AI/ML", "DevOps", "Other"];
+
+const CATEGORY_COLORS: Record<string, string> = {
+  "Web Apps": "text-blue-400 bg-blue-400/10",
+  Mobile: "text-green-400 bg-green-400/10",
+  Cloud: "text-cyan-400 bg-cyan-400/10",
+  "AI/ML": "text-purple-400 bg-purple-400/10",
+  DevOps: "text-orange-400 bg-orange-400/10",
+  Other: "text-text-muted bg-white/5",
+};
+
 const EMPTY_PROJECT: Omit<Project, "id" | "created_at" | "updated_at"> = {
   title: "",
   description: "",
@@ -41,6 +60,9 @@ export default function AdminProjects() {
   const [formData, setFormData] = useState(EMPTY_PROJECT);
   const [tagInput, setTagInput] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const tagInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchProjects();
@@ -54,7 +76,6 @@ export default function AdminProjects() {
         .from("projects")
         .select("*")
         .order("created_at", { ascending: false });
-
       if (error) throw error;
       if (data) setProjects(data as Project[]);
     } catch (error) {
@@ -64,14 +85,13 @@ export default function AdminProjects() {
     }
   };
 
-  /** Open form for adding a new project */
   const openAddForm = () => {
     setFormData(EMPTY_PROJECT);
     setEditingId(null);
+    setTagInput("");
     setIsFormOpen(true);
   };
 
-  /** Open form for editing an existing project */
   const openEditForm = (project: Project) => {
     setFormData({
       title: project.title,
@@ -84,29 +104,21 @@ export default function AdminProjects() {
       featured: project.featured || false,
     });
     setEditingId(project.id);
+    setTagInput("");
     setIsFormOpen(true);
   };
 
-  /** Save (create or update) a project */
   const handleSave = async () => {
     if (!formData.title.trim() || !formData.description.trim()) return;
-
     if (!supabase) return;
-
+    setIsSaving(true);
     try {
       if (editingId) {
-        // Update existing
         const { error } = await supabase
           .from("projects")
-          .update({
-            ...formData,
-            updated_at: new Date().toISOString(),
-          })
+          .update({ ...formData, updated_at: new Date().toISOString() })
           .eq("id", editingId);
-
         if (error) throw error;
-
-        // Optimistic update
         setProjects((prev) =>
           prev.map((p) =>
             p.id === editingId
@@ -115,7 +127,6 @@ export default function AdminProjects() {
           )
         );
       } else {
-        // Add new
         const { data, error } = await supabase
           .from("projects")
           .insert({
@@ -125,51 +136,39 @@ export default function AdminProjects() {
           })
           .select()
           .single();
-
         if (error) throw error;
-
-        // Optimistic update
-        if (data) {
-          setProjects((prev) => [data as Project, ...prev]);
-        }
+        if (data) setProjects((prev) => [data as Project, ...prev]);
       }
-
       setIsFormOpen(false);
       setEditingId(null);
     } catch (error) {
       console.error("Error saving project:", error);
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  /** Delete a project */
   const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this project?")) {
-      if (!supabase) return;
-
-      try {
-        const { error } = await supabase.from("projects").delete().eq("id", id);
-        if (error) throw error;
-
-        // Optimistic update
-        setProjects((prev) => prev.filter((p) => p.id !== id));
-      } catch (error) {
-        console.error("Error deleting project:", error);
-      }
+    if (!supabase) return;
+    try {
+      const { error } = await supabase.from("projects").delete().eq("id", id);
+      if (error) throw error;
+      setProjects((prev) => prev.filter((p) => p.id !== id));
+      setDeleteConfirmId(null);
+    } catch (error) {
+      console.error("Error deleting project:", error);
     }
   };
 
-  /** Add a tag to the form */
   const addTag = () => {
-    if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
-      setFormData((prev) => ({
-        ...prev,
-        tags: [...prev.tags, tagInput.trim()],
-      }));
+    const trimmed = tagInput.trim();
+    if (trimmed && !formData.tags.includes(trimmed)) {
+      setFormData((prev) => ({ ...prev, tags: [...prev.tags, trimmed] }));
       setTagInput("");
+      tagInputRef.current?.focus();
     }
   };
 
-  /** Remove a tag from the form */
   const removeTag = (tag: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -177,9 +176,7 @@ export default function AdminProjects() {
     }));
   };
 
-  const inputClasses = `w-full px-4 py-2.5 text-sm text-text-primary bg-white/5 rounded-xl
-    border border-white/10 outline-none focus:border-crimson-500/50 
-    placeholder:text-text-muted transition-colors`;
+  const isFormValid = formData.title.trim() && formData.description.trim();
 
   return (
     <div className="page-transition">
@@ -196,15 +193,17 @@ export default function AdminProjects() {
             Manage your portfolio projects
           </p>
         </div>
-        <button
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={openAddForm}
-          className="px-5 py-2.5 text-sm font-medium text-white rounded-xl gradient-primary 
-            hover:opacity-90 transition-opacity shadow-lg shadow-crimson-600/20
+          className="px-5 py-2.5 text-sm font-semibold text-white rounded-xl gradient-primary 
+            hover:opacity-90 transition-opacity shadow-lg shadow-crimson-600/25
             flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           Add Project
-        </button>
+        </motion.button>
       </div>
 
       {/* Project List */}
@@ -214,318 +213,496 @@ export default function AdminProjects() {
           <p className="text-sm">Loading projects...</p>
         </div>
       ) : projects.length === 0 ? (
-        <div className="glass rounded-2xl p-12 text-center text-text-muted">
-          <Layers className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p>No projects found. Add one to get started.</p>
+        <div className="glass rounded-2xl p-16 text-center text-text-muted">
+          <Layers className="w-14 h-14 mx-auto mb-5 opacity-30" />
+          <p className="font-medium">No projects yet</p>
+          <p className="text-sm mt-1 opacity-70">Add your first project to get started.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {projects.map((project) => (
-            <div key={project.id} className="glass rounded-2xl p-5 card-hover">
-              {/* Header */}
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-navy-700 to-crimson-900/50 flex items-center justify-center overflow-hidden shrink-0">
-                    {project.image_url ? (
-                      <img src={project.image_url} alt={project.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <Layers className="w-5 h-5 text-white/40" />
-                    )}
-                  </div>
-                  <div>
-                    <h3
-                      className="text-base font-semibold text-text-primary"
-                      style={{ fontFamily: "var(--font-heading)" }}
-                    >
-                      {project.title}
-                    </h3>
-                    <span className="text-xs text-crimson-400">
-                      {project.category}
-                    </span>
-                  </div>
+            <motion.div
+              key={project.id}
+              layout
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              className="glass rounded-2xl p-5 group relative overflow-hidden"
+            >
+              {project.featured && (
+                <div className="absolute top-3 right-3">
+                  <span className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold tracking-wider uppercase text-yellow-400 bg-yellow-400/10 border border-yellow-400/20 rounded-full">
+                    <Star className="w-2.5 h-2.5 fill-yellow-400" />
+                    Featured
+                  </span>
                 </div>
-                <div className="flex gap-1">
-                  <button
-                    onClick={() => openEditForm(project)}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center 
-                      text-text-muted hover:text-text-primary hover:bg-white/5 transition-colors"
-                    aria-label="Edit project"
+              )}
+
+              <div className="flex items-start gap-3 mb-3 pr-20">
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-navy-700 to-crimson-900/40 flex items-center justify-center overflow-hidden shrink-0 ring-1 ring-white/10">
+                  {project.image_url ? (
+                    <img
+                      src={project.image_url}
+                      alt={project.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Layers className="w-5 h-5 text-white/30" />
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <h3
+                    className="text-base font-semibold text-text-primary truncate"
+                    style={{ fontFamily: "var(--font-heading)" }}
                   >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(project.id)}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center 
-                      text-text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors"
-                    aria-label="Delete project"
+                    {project.title}
+                  </h3>
+                  <span
+                    className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${CATEGORY_COLORS[project.category] || CATEGORY_COLORS["Other"]}`}
                   >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                    {project.category}
+                  </span>
                 </div>
               </div>
 
-              {/* Description */}
-              <p className="text-sm text-text-secondary line-clamp-2 mb-3">
+              <p className="text-sm text-text-secondary line-clamp-2 mb-4 leading-relaxed">
                 {project.description}
               </p>
 
-              {/* Tags */}
-              <div className="flex flex-wrap gap-1.5 mb-3">
-                {project.tags?.slice(0, 4).map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-2 py-0.5 text-xs text-text-muted rounded bg-white/5"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-
-              {/* Links */}
-              <div className="flex gap-2">
-                {project.live_url && (
-                  <a
-                    href={project.live_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs text-text-muted hover:text-crimson-400 transition-colors"
-                  >
-                    <ExternalLink className="w-3 h-3" />
-                    Live
-                  </a>
-                )}
-                {project.github_url && (
-                  <a
-                    href={project.github_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs text-text-muted hover:text-navy-400 transition-colors"
-                  >
-                    <Github className="w-3 h-3" />
-                    Source
-                  </a>
-                )}
-              </div>
-
-              {project.featured && (
-                <span className="inline-block mt-3 px-2 py-0.5 text-xs font-medium text-yellow-400 bg-yellow-400/10 rounded">
-                  ⭐ Featured
-                </span>
+              {project.tags && project.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {project.tags.slice(0, 5).map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-2 py-0.5 text-[11px] text-text-muted bg-white/5 border border-white/[0.06] rounded-md"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                  {project.tags.length > 5 && (
+                    <span className="px-2 py-0.5 text-[11px] text-text-muted">
+                      +{project.tags.length - 5}
+                    </span>
+                  )}
+                </div>
               )}
-            </div>
+
+              <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                <div className="flex gap-3">
+                  {project.live_url && (
+                    <a
+                      href={project.live_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-xs text-text-muted hover:text-crimson-400 transition-colors"
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      Live
+                    </a>
+                  )}
+                  {project.github_url && (
+                    <a
+                      href={project.github_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-xs text-text-muted hover:text-text-primary transition-colors"
+                    >
+                      <Github className="w-3 h-3" />
+                      Source
+                    </a>
+                  )}
+                </div>
+
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={() => openEditForm(project)}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center 
+                      text-text-muted hover:text-text-primary hover:bg-white/8 transition-all"
+                    aria-label="Edit project"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => setDeleteConfirmId(project.id)}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center 
+                      text-text-muted hover:text-red-400 hover:bg-red-500/10 transition-all"
+                    aria-label="Delete project"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
           ))}
         </div>
       )}
 
-      {/* Add/Edit Modal */}
-      {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => setIsFormOpen(false)}
-          />
-          <div className="relative w-full max-w-lg max-h-[85vh] overflow-y-auto glass-strong rounded-2xl p-6 shadow-2xl">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between mb-6">
-              <h2
-                className="text-xl font-semibold text-text-primary"
-                style={{ fontFamily: "var(--font-heading)" }}
-              >
-                {editingId ? "Edit Project" : "Add Project"}
-              </h2>
-              <button
-                onClick={() => setIsFormOpen(false)}
-                className="w-8 h-8 rounded-lg flex items-center justify-center 
-                  text-text-muted hover:text-text-primary hover:bg-white/5 transition-colors"
-                aria-label="Close"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Form */}
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-text-secondary mb-1.5">
-                  Title *
-                </label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) =>
-                    setFormData({ ...formData, title: e.target.value })
-                  }
-                  placeholder="Project title"
-                  className={inputClasses}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-text-secondary mb-1.5">
-                  Description *
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  placeholder="Project description"
-                  rows={3}
-                  className={`${inputClasses} resize-none`}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-text-secondary mb-1.5">
-                    Category
-                  </label>
-                  <select
-                    value={formData.category}
-                    onChange={(e) =>
-                      setFormData({ ...formData, category: e.target.value })
-                    }
-                    className={inputClasses}
-                  >
-                    {[
-                      "Web Apps",
-                      "Mobile",
-                      "Cloud",
-                      "AI/ML",
-                      "DevOps",
-                      "Other",
-                    ].map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
+      {/* ─── Delete Confirm Modal ───────────────────────────────────── */}
+      <AnimatePresence>
+        {deleteConfirmId && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              className="absolute inset-0 bg-black/70 backdrop-blur-md"
+              onClick={() => setDeleteConfirmId(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 16 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative w-full max-w-sm"
+            >
+              <div className="bg-[#141420] border border-white/[0.08] rounded-2xl p-6 shadow-2xl">
+                <div className="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-4 mx-auto">
+                  <Trash2 className="w-6 h-6 text-red-400" />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-text-secondary mb-1.5">
-                    Image URL
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.image_url}
-                    onChange={(e) =>
-                      setFormData({ ...formData, image_url: e.target.value })
-                    }
-                    placeholder="https://..."
-                    className={inputClasses}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-text-secondary mb-1.5">
-                    Live URL
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.live_url}
-                    onChange={(e) =>
-                      setFormData({ ...formData, live_url: e.target.value })
-                    }
-                    placeholder="https://..."
-                    className={inputClasses}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-text-secondary mb-1.5">
-                    GitHub URL
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.github_url}
-                    onChange={(e) =>
-                      setFormData({ ...formData, github_url: e.target.value })
-                    }
-                    placeholder="https://github.com/..."
-                    className={inputClasses}
-                  />
-                </div>
-              </div>
-
-              {/* Tags */}
-              <div>
-                <label className="block text-sm font-medium text-text-secondary mb-1.5">
-                  Tags
-                </label>
-                <div className="flex gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={tagInput}
-                    onChange={(e) => setTagInput(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
-                    placeholder="Add a tag"
-                    className={`flex-1 ${inputClasses}`}
-                  />
+                <h3 className="text-base font-semibold text-text-primary text-center mb-1" style={{ fontFamily: "var(--font-heading)" }}>
+                  Delete Project
+                </h3>
+                <p className="text-sm text-text-secondary text-center mb-6">
+                  This action cannot be undone. The project will be permanently removed.
+                </p>
+                <div className="flex gap-3">
                   <button
-                    type="button"
-                    onClick={addTag}
-                    className="px-3 py-2 text-sm text-white rounded-xl gradient-primary hover:opacity-90 transition-opacity"
+                    onClick={() => setDeleteConfirmId(null)}
+                    className="flex-1 px-4 py-2.5 text-sm font-medium text-text-secondary rounded-xl border border-white/10 hover:bg-white/5 transition-colors"
                   >
-                    Add
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleDelete(deleteConfirmId)}
+                    className="flex-1 px-4 py-2.5 text-sm font-semibold text-white rounded-xl bg-red-500 hover:bg-red-600 transition-colors shadow-lg shadow-red-600/20"
+                  >
+                    Delete
                   </button>
                 </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {formData.tags?.map((tag) => (
-                    <span
-                      key={tag}
-                      className="flex items-center gap-1 px-2 py-1 text-xs text-text-secondary 
-                        bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors"
-                    >
-                      {tag}
-                      <button
-                        onClick={() => removeTag(tag)}
-                        className="text-text-muted hover:text-red-400"
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── Add / Edit Modal ──────────────────────────────────────── */}
+      <AnimatePresence>
+        {isFormOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          >
+            {/* Backdrop */}
+            <motion.div
+              className="absolute inset-0 bg-black/70 backdrop-blur-md"
+              onClick={() => setIsFormOpen(false)}
+            />
+
+            {/* Sheet */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 20 }}
+              transition={{ type: "spring", damping: 26, stiffness: 320 }}
+              className="relative w-full max-w-[560px] max-h-[92vh] flex flex-col overflow-hidden"
+              style={{ borderRadius: "20px" }}
+            >
+              {/* Glass body */}
+              <div className="flex flex-col h-full bg-[#111118]/95 border border-white/[0.09] rounded-[20px] shadow-[0_32px_80px_rgba(0,0,0,0.6)]">
+
+                {/* ── Header ─────────────────────────────── */}
+                <div className="flex items-center justify-between px-6 pt-6 pb-5 border-b border-white/[0.06]">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl gradient-primary flex items-center justify-center shadow-lg shadow-crimson-600/20">
+                      {editingId ? (
+                        <Pencil className="w-4 h-4 text-white" />
+                      ) : (
+                        <Plus className="w-4 h-4 text-white" />
+                      )}
+                    </div>
+                    <div>
+                      <h2
+                        className="text-base font-bold text-text-primary leading-none"
+                        style={{ fontFamily: "var(--font-heading)" }}
                       >
-                        <X className="w-3 h-3" />
+                        {editingId ? "Edit Project" : "New Project"}
+                      </h2>
+                      <p className="text-[11px] text-text-muted mt-0.5">
+                        {editingId
+                          ? "Update your project details"
+                          : "Add a new portfolio project"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setIsFormOpen(false)}
+                    className="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center 
+                      text-text-muted hover:text-text-primary transition-all"
+                    aria-label="Close"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* ── Scrollable form body ─────────────── */}
+                <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+
+                  {/* Title */}
+                  <FieldGroup icon={<Type className="w-3.5 h-3.5" />} label="Title" required>
+                    <input
+                      type="text"
+                      value={formData.title}
+                      onChange={(e) =>
+                        setFormData({ ...formData, title: e.target.value })
+                      }
+                      placeholder="My Awesome Project"
+                      className={inputCls}
+                      autoFocus
+                    />
+                  </FieldGroup>
+
+                  {/* Description */}
+                  <FieldGroup icon={<AlignLeft className="w-3.5 h-3.5" />} label="Description" required>
+                    <textarea
+                      value={formData.description}
+                      onChange={(e) =>
+                        setFormData({ ...formData, description: e.target.value })
+                      }
+                      placeholder="What does this project do? What problem does it solve?"
+                      rows={3}
+                      className={`${inputCls} resize-none`}
+                    />
+                  </FieldGroup>
+
+                  {/* Category + Image URL */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <FieldGroup icon={<ChevronDown className="w-3.5 h-3.5" />} label="Category">
+                      <div className="relative">
+                        <select
+                          value={formData.category}
+                          onChange={(e) =>
+                            setFormData({ ...formData, category: e.target.value })
+                          }
+                          className={`${inputCls} pr-8 appearance-none cursor-pointer`}
+                        >
+                          {CATEGORIES.map((cat) => (
+                            <option key={cat} value={cat} className="bg-[#111118]">
+                              {cat}
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted pointer-events-none" />
+                      </div>
+                    </FieldGroup>
+                    <FieldGroup icon={<Image className="w-3.5 h-3.5" />} label="Image URL">
+                      <input
+                        type="url"
+                        value={formData.image_url}
+                        onChange={(e) =>
+                          setFormData({ ...formData, image_url: e.target.value })
+                        }
+                        placeholder="https://..."
+                        className={inputCls}
+                      />
+                    </FieldGroup>
+                  </div>
+
+                  {/* Links */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <FieldGroup icon={<ExternalLink className="w-3.5 h-3.5" />} label="Live URL">
+                      <input
+                        type="url"
+                        value={formData.live_url}
+                        onChange={(e) =>
+                          setFormData({ ...formData, live_url: e.target.value })
+                        }
+                        placeholder="https://..."
+                        className={inputCls}
+                      />
+                    </FieldGroup>
+                    <FieldGroup icon={<Github className="w-3.5 h-3.5" />} label="GitHub URL">
+                      <input
+                        type="url"
+                        value={formData.github_url}
+                        onChange={(e) =>
+                          setFormData({ ...formData, github_url: e.target.value })
+                        }
+                        placeholder="https://github.com/..."
+                        className={inputCls}
+                      />
+                    </FieldGroup>
+                  </div>
+
+                  {/* Tags */}
+                  <FieldGroup icon={<Tag className="w-3.5 h-3.5" />} label="Tags">
+                    <div className="flex gap-2 mb-2">
+                      <input
+                        ref={tagInputRef}
+                        type="text"
+                        value={tagInput}
+                        onChange={(e) => setTagInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            addTag();
+                          }
+                        }}
+                        placeholder="Add a tag and press Enter"
+                        className={`flex-1 ${inputCls}`}
+                      />
+                      <button
+                        type="button"
+                        onClick={addTag}
+                        disabled={!tagInput.trim()}
+                        className="px-3.5 py-2 text-sm font-medium text-white rounded-xl gradient-primary 
+                          hover:opacity-90 transition-opacity disabled:opacity-40"
+                      >
+                        Add
                       </button>
-                    </span>
-                  ))}
+                    </div>
+                    {formData.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        <AnimatePresence>
+                          {formData.tags.map((tag) => (
+                            <motion.span
+                              key={tag}
+                              initial={{ opacity: 0, scale: 0.8 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.8 }}
+                              className="flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 text-xs font-medium
+                                text-text-secondary bg-white/[0.06] border border-white/10 
+                                rounded-lg hover:border-white/20 transition-colors group/tag"
+                            >
+                              {tag}
+                              <button
+                                onClick={() => removeTag(tag)}
+                                className="w-4 h-4 rounded flex items-center justify-center
+                                  text-text-muted hover:text-red-400 hover:bg-red-400/10 
+                                  transition-all group-hover/tag:opacity-100"
+                              >
+                                <X className="w-2.5 h-2.5" />
+                              </button>
+                            </motion.span>
+                          ))}
+                        </AnimatePresence>
+                      </div>
+                    )}
+                  </FieldGroup>
+
+                  {/* Featured Toggle */}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData({ ...formData, featured: !formData.featured })
+                    }
+                    className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all
+                      ${formData.featured
+                        ? "bg-yellow-400/5 border-yellow-400/25 text-text-primary"
+                        : "bg-white/[0.03] border-white/[0.08] text-text-secondary hover:border-white/15"
+                      }`}
+                  >
+                    <div
+                      className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-all
+                        ${formData.featured
+                          ? "bg-yellow-400 border-yellow-400"
+                          : "border-white/20 bg-white/5"
+                        }`}
+                    >
+                      {formData.featured && (
+                        <Check className="w-3 h-3 text-black" strokeWidth={3} />
+                      )}
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-medium flex items-center gap-1.5">
+                        <Star
+                          className={`w-3.5 h-3.5 ${formData.featured ? "text-yellow-400 fill-yellow-400" : "text-text-muted"}`}
+                        />
+                        Featured Project
+                      </p>
+                      <p className="text-xs text-text-muted mt-0.5">
+                        Highlighted prominently on your portfolio showcase
+                      </p>
+                    </div>
+                  </button>
+                </div>
+
+                {/* ── Footer ─────────────────────────────── */}
+                <div className="px-6 py-4 border-t border-white/[0.06] flex items-center justify-between gap-3">
+                  <span className="text-xs text-text-muted">
+                    {isFormValid
+                      ? "Ready to save"
+                      : "Title and description are required"}
+                  </span>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setIsFormOpen(false)}
+                      className="px-4 py-2 text-sm font-medium text-text-secondary rounded-xl 
+                        border border-white/10 hover:bg-white/5 hover:text-text-primary transition-all"
+                    >
+                      Cancel
+                    </button>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={handleSave}
+                      disabled={!isFormValid || isSaving}
+                      className="min-w-[130px] px-5 py-2 text-sm font-semibold text-white rounded-xl 
+                        gradient-primary hover:opacity-90 transition-opacity
+                        shadow-lg shadow-crimson-600/25
+                        flex items-center justify-center gap-2
+                        disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      {isSaving ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Saving…
+                        </>
+                      ) : (
+                        <>{editingId ? "Save Changes" : "Create Project"}</>
+                      )}
+                    </motion.button>
+                  </div>
                 </div>
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
-              {/* Featured Toggle */}
-              <label className="flex items-center gap-3 cursor-pointer mt-2 bg-white/5 p-3 rounded-xl border border-white/10">
-                <input
-                  type="checkbox"
-                  checked={formData.featured}
-                  onChange={(e) =>
-                    setFormData({ ...formData, featured: e.target.checked })
-                  }
-                  className="w-5 h-5 rounded border-white/20 bg-white/5 accent-crimson-500 focus:ring-1 focus:ring-crimson-500"
-                />
-                <span className="text-sm font-medium text-text-primary">
-                  Featured Project <span className="text-text-muted font-normal ml-1">(Show prominently on portfolio)</span>
-                </span>
-              </label>
-            </div>
+/* ─── Helpers ─────────────────────────────────────────────────────────── */
 
-            {/* Form Actions */}
-            <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-white/10">
-              <button
-                onClick={() => setIsFormOpen(false)}
-                className="px-5 py-2.5 text-sm font-medium text-text-secondary rounded-xl 
-                  hover:bg-white/5 hover:text-text-primary transition-colors border border-transparent hover:border-white/10"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={!formData.title.trim() || !formData.description.trim()}
-                className="px-5 py-2.5 text-sm font-medium text-white rounded-xl gradient-primary 
-                  hover:opacity-90 transition-opacity shadow-lg shadow-crimson-600/20 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {editingId ? "Update" : "Create"} Project
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+const inputCls = `w-full px-3.5 py-2.5 text-sm text-text-primary bg-white/[0.05] rounded-xl
+  border border-white/[0.09] outline-none 
+  focus:border-crimson-500/60 focus:bg-white/[0.07] focus:ring-2 focus:ring-crimson-500/10
+  placeholder:text-text-muted/60 transition-all duration-200`;
+
+function FieldGroup({
+  icon,
+  label,
+  required,
+  children,
+}: {
+  icon?: React.ReactNode;
+  label: string;
+  required?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label className="flex items-center gap-1.5 text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">
+        {icon && <span className="opacity-70">{icon}</span>}
+        {label}
+        {required && <span className="text-crimson-500 ml-0.5">*</span>}
+      </label>
+      {children}
     </div>
   );
 }
