@@ -24,6 +24,7 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import ThemeToggle from "@/components/ThemeToggle";
 
 /** Admin navigation items */
 const ADMIN_NAV = [
@@ -48,7 +49,7 @@ export default function AdminSidebar({
   const NavContent = () => (
     <>
       {/* Logo */}
-      <div className="flex items-center justify-between px-4 py-5 border-b border-white/5">
+      <div className="flex items-center justify-between px-4 py-5 border-b border-border-subtle">
         <Link href="/admin" className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl gradient-primary flex items-center justify-center">
             <Code2 className="w-5 h-5 text-white" />
@@ -67,7 +68,7 @@ export default function AdminSidebar({
         <button
           onClick={onToggle}
           className="hidden lg:flex w-8 h-8 rounded-lg items-center justify-center
-            text-text-muted hover:text-text-primary hover:bg-white/5 transition-colors"
+            text-text-muted hover:text-text-primary hover:bg-overlay-hover transition-colors"
           aria-label="Toggle sidebar"
         >
           <ChevronLeft
@@ -96,7 +97,7 @@ export default function AdminSidebar({
                 ${
                   isActive
                     ? "gradient-primary text-white shadow-lg shadow-crimson-600/20"
-                    : "text-text-secondary hover:text-text-primary hover:bg-white/5"
+                    : "text-text-secondary hover:text-text-primary hover:bg-overlay-hover"
                 }
                 ${collapsed ? "justify-center" : ""}
               `}
@@ -110,17 +111,19 @@ export default function AdminSidebar({
       </nav>
 
       {/* Footer Actions */}
-      <div className="px-3 py-4 border-t border-white/5 space-y-1">
+      <div className="px-3 py-4 border-t border-border-subtle space-y-1">
         <Link
           href="/"
           className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-            text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors
+            text-text-secondary hover:text-text-primary hover:bg-overlay-hover transition-colors
             ${collapsed ? "justify-center" : ""}`}
           title={collapsed ? "Back to Site" : undefined}
         >
           <ChevronLeft className="w-5 h-5 flex-shrink-0" />
           {!collapsed && <span>Back to Site</span>}
         </Link>
+
+        <ThemeToggle collapsed={collapsed} />
 
         <button
           className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
@@ -165,7 +168,7 @@ export default function AdminSidebar({
       <aside
         className={`
           lg:hidden fixed top-0 left-0 z-50 h-screen w-64 bg-surface-card
-          border-r border-white/5 flex flex-col
+          border-r border-border-subtle flex flex-col
           transition-transform duration-300
           ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
         `}
@@ -184,7 +187,7 @@ export default function AdminSidebar({
       {/* Desktop Sidebar */}
       <aside
         className={`
-          hidden lg:flex flex-col h-screen bg-surface-card border-r border-white/5
+          hidden lg:flex flex-col h-screen bg-surface-card border-r border-border-subtle
           transition-all duration-300
           ${collapsed ? "w-20" : "w-64"}
         `}

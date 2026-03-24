@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 /**
  * Font configurations
@@ -49,6 +50,8 @@ export const metadata: Metadata = {
 /**
  * Root Layout
  * Wraps the entire application with fonts, theme, and global providers.
+ * defaultTheme="dark" keeps the admin panel dark by default.
+ * The toggle in the sidebar lets users switch to light.
  */
 export default function RootLayout({
   children,
@@ -56,29 +59,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${outfit.variable}`}>
       <body
-        className="min-h-screen antialiased"
+        className="min-h-screen antialiased transition-colors duration-300"
         style={{ fontFamily: "var(--font-body)" }}
       >
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange={false}>
+          {children}
 
-        {/* Global toast notifications */}
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: "#ffffff",
-              color: "#1e3a5f",
-              border: "1px solid #ebf3ff",
-              boxShadow: "0 4px 12px rgba(30, 58, 95, 0.08)",
-            },
-            success: {
-              iconTheme: { primary: "#dc2626", secondary: "#ffffff" },
-            },
-          }}
-        />
+          {/* Global toast notifications */}
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: "#ffffff",
+                color: "#1e3a5f",
+                border: "1px solid #ebf3ff",
+                boxShadow: "0 4px 12px rgba(30, 58, 95, 0.08)",
+              },
+              success: {
+                iconTheme: { primary: "#dc2626", secondary: "#ffffff" },
+              },
+            }}
+          />
+        </ThemeProvider>
       </body>
     </html>
   );
