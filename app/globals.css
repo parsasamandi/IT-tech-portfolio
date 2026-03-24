@@ -41,9 +41,12 @@ body {
   box-shadow: 0 4px 20px -2px rgba(30, 58, 95, 0.05), 0 0 3px rgba(30, 58, 95, 0.02);
 }
 
-.card-shadow-hover:hover {
-  box-shadow: 0 20px 40px -8px rgba(30, 58, 95, 0.12), 0 0 4px rgba(30, 58, 95, 0.04);
-  transform: translateY(-4px);
+/* Only apply hover transforms on devices that support hover (not touch) */
+@media (hover: hover) and (pointer: fine) {
+  .card-shadow-hover:hover {
+    box-shadow: 0 20px 40px -8px rgba(30, 58, 95, 0.12), 0 0 4px rgba(30, 58, 95, 0.04);
+    transform: translateY(-4px);
+  }
 }
 
 .glass-card {
@@ -113,4 +116,59 @@ body {
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
+}
+
+/* Chat widget pulse animation - only on desktop */
+@media (hover: hover) and (pointer: fine) {
+  .chat-pulse {
+    animation: chatPulse 2s ease-in-out infinite;
+  }
+}
+
+@keyframes chatPulse {
+  0%, 100% {
+    box-shadow: 0 10px 25px -5px rgba(225, 29, 72, 0.4);
+  }
+  50% {
+    box-shadow: 0 10px 35px -3px rgba(225, 29, 72, 0.6);
+  }
+}
+
+/* Hero background orbs - subtle animation only on desktop */
+@media (hover: hover) and (pointer: fine) {
+  .hero-orb {
+    animation: heroOrbPulse 8s ease-in-out infinite;
+  }
+}
+
+@keyframes heroOrbPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* ============================================
+ * ACCESSIBILITY & MOBILE PERFORMANCE
+ * Disable animations for users who prefer reduced motion
+ * and optimize for mobile devices
+ * ============================================ */
+
+/* Respect user's reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Disable hover transforms on touch devices to prevent jitter */
+@media (hover: none) {
+  .card-shadow-hover:hover,
+  .hover\:-translate-y-1:hover,
+  .hover\:-translate-y-2:hover {
+    transform: none !important;
+  }
 }

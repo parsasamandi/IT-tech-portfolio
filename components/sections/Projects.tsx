@@ -39,12 +39,11 @@ export default function Projects() {
             {filtered.map((project, i) => (
               <motion.div
                 key={project.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
-                className="group rounded-3xl glass-card border border-navy-100 overflow-hidden card-shadow-hover transition-all duration-500"
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+                className="group rounded-3xl glass-card border border-navy-100 overflow-hidden card-shadow-hover transition-shadow duration-500"
               >
                 {/* Image Area */}
                 <div className="relative h-56 bg-navy-100 overflow-hidden">

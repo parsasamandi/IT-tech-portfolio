@@ -52,8 +52,8 @@ export default function Contact() {
               <motion.div key={label}
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ delay: i * 0.08, duration: 0.4 }}
                 className="card p-4 flex items-center gap-3"
               >
                 <div className="w-10 h-10 rounded-lg gradient-primary flex items-center justify-center flex-shrink-0

@@ -17,7 +17,7 @@ export default function Blog() {
               key={post.title}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: "-100px" }}
               transition={{ delay: i * 0.08, duration: 0.4 }}
               className="group card overflow-hidden"
             >

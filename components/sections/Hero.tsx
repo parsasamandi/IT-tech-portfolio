@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown, Sparkles, Code, Cpu, Globe, Database, Layers, Monitor } from "lucide-react";
+import { useShouldReduceMotion } from "@/lib/hooks";
 
 const TYPED_WORDS = [
   "Mission-Critical Apps",
@@ -17,6 +18,7 @@ export default function Hero() {
   const [displayText, setDisplayText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const shouldReduceMotion = useShouldReduceMotion();
 
   useEffect(() => {
     if (isPaused) return;
@@ -56,26 +58,35 @@ export default function Hero() {
       {/* Background Layer */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 dot-pattern opacity-30" />
-        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-crimson-100/30 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-navy-100/40 rounded-full blur-[140px] animate-pulse" style={{ animationDelay: "2s" }} />
+        {/* Blur orbs - hidden on mobile to prevent jitter, reduced blur on tablet */}
+        <div className="hidden md:block absolute top-1/4 left-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-crimson-100/30 rounded-full blur-[60px] md:blur-[120px] hero-orb" />
+        <div className="hidden md:block absolute bottom-1/4 right-1/4 w-[350px] md:w-[600px] h-[350px] md:h-[600px] bg-navy-100/40 rounded-full blur-[70px] md:blur-[140px] hero-orb" style={{ animationDelay: "2s" }} />
 
-        {/* Floating Icons */}
+        {/* Floating Icons - static on mobile, animated on desktop */}
         {floatingIcons.map((item, index) => (
           <motion.div
             key={index}
-            className="absolute text-navy-200/40"
+            className="absolute text-navy-200/40 hidden sm:block"
             style={{ top: item.top, left: item.left, right: item.right }}
-            animate={{
-              y: [0, -30, 0],
-              rotate: [0, 15, -15, 0],
-              opacity: [0.3, 0.6, 0.3],
-            }}
-            transition={{
-              duration: 6,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: item.delay,
-            }}
+            animate={
+              shouldReduceMotion
+                ? { y: 0, rotate: 0, opacity: 0.4 }
+                : {
+                    y: [0, -30, 0],
+                    rotate: [0, 15, -15, 0],
+                    opacity: [0.3, 0.6, 0.3],
+                  }
+            }
+            transition={
+              shouldReduceMotion
+                ? { duration: 0 }
+                : {
+                    duration: 6,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: item.delay,
+                  }
+            }
           >
             <item.Icon className="w-16 h-16 sm:w-20 sm:h-20" strokeWidth={1} />
           </motion.div>
@@ -145,9 +156,10 @@ export default function Hero() {
         </motion.div>
       </div>
 
+      {/* Scroll indicator - static on mobile to prevent jitter */}
       <motion.div
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
+        animate={shouldReduceMotion ? { y: 0 } : { y: [0, 10, 0] }}
+        transition={shouldReduceMotion ? { duration: 0 } : { duration: 2, repeat: Infinity }}
         className="absolute bottom-10 flex flex-col items-center gap-2 text-navy-400 opacity-50"
       >
         <span className="text-[10px] font-black tracking-widest uppercase">Scroll Down</span>

@@ -21,8 +21,8 @@ export default function Services() {
                 key={service.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ delay: i * 0.08, duration: 0.4 }}
                 className="group p-8 rounded-3xl bg-navy-50 border border-navy-100 card-shadow-hover transition-all duration-500"
               >
                 <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-8 group-hover:bg-crimson-600 transition-colors duration-500">

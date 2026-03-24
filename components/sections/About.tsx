@@ -19,8 +19,8 @@ export default function About() {
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
           >
             <h3 className="text-2xl font-bold text-navy-900 mb-5" style={{ fontFamily: "var(--font-heading)" }}>
               Driving Digital <span className="text-crimson-600">Transformation</span>
@@ -77,8 +77,8 @@ export default function About() {
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
             className="grid grid-cols-2 gap-4"
           >
             {STATS.map((stat, i) => {
@@ -88,8 +88,8 @@ export default function About() {
                   key={stat.label}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ delay: i * 0.08, duration: 0.4 }}
                   className="glass-card rounded-2xl p-5 text-center hover:border-crimson-200 card-shadow-hover hover:-translate-y-1 transition-all duration-300 cursor-default"
                 >
                   <div className="w-10 h-10 rounded-lg bg-crimson-50 flex items-center justify-center mx-auto mb-3">
