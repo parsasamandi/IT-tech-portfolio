@@ -9,57 +9,50 @@
  * - Delete action
  * - Search and filter
  */
-import { useState } from "react";
-import { Mail, MailOpen, Trash2, Search, Eye } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Mail, MailOpen, Trash2, Search, Eye, Loader2 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
-/** Sample messages data for demo */
-const DEMO_MESSAGES = [
-  {
-    id: "1",
-    name: "Alex Martinez",
-    email: "alex@example.com",
-    subject: "Project Inquiry - E-commerce Platform",
-    message:
-      "Hi, I'm interested in building an e-commerce platform for my retail business. We need inventory management, payment processing (Stripe), and a mobile-responsive design. Our budget is around $15-20K and we'd like to launch in 3 months. Can we schedule a call to discuss?",
-    is_read: false,
-    created_at: "2024-03-20T10:30:00Z",
-  },
-  {
-    id: "2",
-    name: "Sara Williams",
-    email: "sara@company.com",
-    subject: "Partnership Opportunity",
-    message:
-      "We're a marketing agency looking for a reliable technology partner. We have several clients who need custom web applications and we'd like to explore a partnership. Let me know if you're interested.",
-    is_read: false,
-    created_at: "2024-03-20T08:15:00Z",
-  },
-  {
-    id: "3",
-    name: "David Kim",
-    email: "david@startup.io",
-    subject: "Technical Consultation Request",
-    message:
-      "We're a startup building a SaaS platform and need help with our architecture. We're currently using a monolithic Node.js app and want to migrate to microservices. Looking for expert guidance.",
-    is_read: true,
-    created_at: "2024-03-19T14:45:00Z",
-  },
-  {
-    id: "4",
-    name: "Emily Chen",
-    email: "emily@enterprise.co",
-    subject: "Cloud Migration Quote",
-    message:
-      "Our company is looking to migrate from on-premise servers to AWS. We have approximately 20 services and 5 databases. Could you provide a rough estimate for the migration?",
-    is_read: true,
-    created_at: "2024-03-18T09:00:00Z",
-  },
-];
+type Message = {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  is_read: boolean;
+  created_at: string;
+};
 
 export default function AdminMessages() {
-  const [messages, setMessages] = useState(DEMO_MESSAGES);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchMessages();
+  }, []);
+
+  const fetchMessages = async () => {
+    setIsLoading(true);
+    try {
+      if (!supabase) {
+        console.error("Supabase client is not configured");
+        return;
+      }
+      const { data, error } = await supabase
+        .from("messages")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      if (data) setMessages(data);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const filteredMessages = messages.filter(
     (msg) =>
@@ -70,15 +63,38 @@ export default function AdminMessages() {
 
   const selectedMsg = messages.find((m) => m.id === selectedMessage);
 
-  const markAsRead = (id: string) => {
-    setMessages((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, is_read: true } : m))
-    );
+  const markAsRead = async (id: string) => {
+    const msg = messages.find((m) => m.id === id);
+    if (msg && !msg.is_read) {
+      // Optimistic update
+      setMessages((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, is_read: true } : m))
+      );
+
+      if (supabase) {
+        try {
+          await supabase.from("messages").update({ is_read: true }).eq("id", id);
+        } catch (error) {
+          console.error("Error marking message as read:", error);
+        }
+      }
+    }
   };
 
-  const deleteMessage = (id: string) => {
-    setMessages((prev) => prev.filter((m) => m.id !== id));
-    if (selectedMessage === id) setSelectedMessage(null);
+  const deleteMessage = async (id: string) => {
+    if (confirm("Are you sure you want to delete this message?")) {
+      // Optimistic update
+      setMessages((prev) => prev.filter((m) => m.id !== id));
+      if (selectedMessage === id) setSelectedMessage(null);
+
+      if (supabase) {
+        try {
+          await supabase.from("messages").delete().eq("id", id);
+        } catch (error) {
+          console.error("Error deleting message:", error);
+        }
+      }
+    }
   };
 
   return (
@@ -114,8 +130,13 @@ export default function AdminMessages() {
           </div>
 
           {/* Message List */}
-          <div className="space-y-2 glass rounded-2xl p-3">
-            {filteredMessages.length === 0 ? (
+          <div className="space-y-2 glass rounded-2xl p-3 min-h-[400px]">
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center h-full py-20 text-text-muted">
+                <Loader2 className="w-8 h-8 animate-spin mb-4 text-crimson-500" />
+                <p className="text-sm">Loading messages...</p>
+              </div>
+            ) : filteredMessages.length === 0 ? (
               <p className="text-center text-text-muted py-8 text-sm">
                 No messages found
               </p>
@@ -207,7 +228,7 @@ export default function AdminMessages() {
               </div>
             </div>
           ) : (
-            <div className="glass rounded-2xl p-12 text-center">
+            <div className="glass rounded-2xl p-12 text-center h-full flex flex-col items-center justify-center min-h-[400px]">
               <Eye className="w-12 h-12 text-text-muted mx-auto mb-4" />
               <p className="text-text-secondary">
                 Select a message to view details

@@ -7,14 +7,17 @@
  * - Site name, tagline, about text
  * - Social media links
  * - Contact information
- * - Save to Supabase (or local state in demo mode)
+ * - Save to Supabase
  */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Save, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { supabase } from "@/lib/supabase";
 
 export default function AdminSettings() {
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [settingsId, setSettingsId] = useState<string | null>(null);
   const [settings, setSettings] = useState({
     site_name: "ITTech Portfolio",
     tagline: "Next-Generation Technology Solutions",
@@ -29,20 +32,103 @@ export default function AdminSettings() {
     resume_url: "",
   });
 
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    setIsLoading(true);
+    try {
+      if (!supabase) return;
+      const { data, error } = await supabase
+        .from("settings")
+        .select("*")
+        .limit(1)
+        .single();
+        
+      if (error && error.code !== "PGRST116") {
+        throw error;
+      }
+      
+      if (data) {
+        setSettingsId(data.id);
+        setSettings({
+          site_name: data.site_name || "",
+          tagline: data.tagline || "",
+          about_text: data.about_text || "",
+          email: data.email || "",
+          phone: data.phone || "",
+          location: data.location || "",
+          github_url: data.github_url || "",
+          linkedin_url: data.linkedin_url || "",
+          twitter_url: data.twitter_url || "",
+          resume_url: data.resume_url || "",
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching settings:", error);
+      toast.error("Failed to load settings");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   /** Handle save */
   const handleSave = async () => {
     setIsSaving(true);
 
-    // Simulate API call (would store in Supabase when configured)
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    try {
+      if (!supabase) {
+        toast.error("Supabase client not configured");
+        setIsSaving(false);
+        return;
+      }
 
-    toast.success("Settings saved successfully!");
-    setIsSaving(false);
+      if (settingsId) {
+        const { error } = await supabase
+          .from("settings")
+          .update({
+            ...settings,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", settingsId);
+          
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase
+          .from("settings")
+          .insert({
+            ...settings,
+            updated_at: new Date().toISOString(),
+          })
+          .select()
+          .single();
+          
+        if (error) throw error;
+        if (data) setSettingsId(data.id);
+      }
+
+      toast.success("Settings saved successfully!");
+    } catch (error) {
+      console.error("Error saving settings:", error);
+      toast.error("Failed to save settings");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const inputClasses = `w-full px-4 py-2.5 text-sm text-text-primary bg-white/5 rounded-xl
     border border-white/10 outline-none focus:border-crimson-500/50 
     placeholder:text-text-muted transition-colors`;
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-32 text-text-muted page-transition">
+        <Loader2 className="w-10 h-10 animate-spin mb-4 text-crimson-500" />
+        <p>Loading settings...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="page-transition">

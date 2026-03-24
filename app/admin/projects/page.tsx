@@ -8,7 +8,7 @@
  * - Add/edit form modal
  * - Category and tag management
  */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Plus,
   Pencil,
@@ -17,9 +17,10 @@ import {
   ExternalLink,
   Github,
   Layers,
+  Loader2,
 } from "lucide-react";
-import { SAMPLE_PROJECTS } from "@/lib/constants";
 import type { Project } from "@/lib/types";
+import { supabase } from "@/lib/supabase";
 
 /** Empty project template for new entries */
 const EMPTY_PROJECT: Omit<Project, "id" | "created_at" | "updated_at"> = {
@@ -34,11 +35,34 @@ const EMPTY_PROJECT: Omit<Project, "id" | "created_at" | "updated_at"> = {
 };
 
 export default function AdminProjects() {
-  const [projects, setProjects] = useState<Project[]>(SAMPLE_PROJECTS);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState(EMPTY_PROJECT);
   const [tagInput, setTagInput] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    setIsLoading(true);
+    try {
+      if (!supabase) return;
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      if (data) setProjects(data as Project[]);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   /** Open form for adding a new project */
   const openAddForm = () => {
@@ -53,48 +77,84 @@ export default function AdminProjects() {
       title: project.title,
       description: project.description,
       category: project.category,
-      image_url: project.image_url,
-      tags: project.tags,
+      image_url: project.image_url || "",
+      tags: project.tags || [],
       live_url: project.live_url || "",
       github_url: project.github_url || "",
-      featured: project.featured,
+      featured: project.featured || false,
     });
     setEditingId(project.id);
     setIsFormOpen(true);
   };
 
   /** Save (create or update) a project */
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.title.trim() || !formData.description.trim()) return;
 
-    if (editingId) {
-      // Update existing
-      setProjects((prev) =>
-        prev.map((p) =>
-          p.id === editingId
-            ? { ...p, ...formData, updated_at: new Date().toISOString() }
-            : p
-        )
-      );
-    } else {
-      // Add new
-      const newProject: Project = {
-        ...formData,
-        id: Date.now().toString(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-      setProjects((prev) => [newProject, ...prev]);
-    }
+    if (!supabase) return;
 
-    setIsFormOpen(false);
-    setEditingId(null);
+    try {
+      if (editingId) {
+        // Update existing
+        const { error } = await supabase
+          .from("projects")
+          .update({
+            ...formData,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", editingId);
+
+        if (error) throw error;
+
+        // Optimistic update
+        setProjects((prev) =>
+          prev.map((p) =>
+            p.id === editingId
+              ? { ...p, ...formData, updated_at: new Date().toISOString() }
+              : p
+          )
+        );
+      } else {
+        // Add new
+        const { data, error } = await supabase
+          .from("projects")
+          .insert({
+            ...formData,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        // Optimistic update
+        if (data) {
+          setProjects((prev) => [data as Project, ...prev]);
+        }
+      }
+
+      setIsFormOpen(false);
+      setEditingId(null);
+    } catch (error) {
+      console.error("Error saving project:", error);
+    }
   };
 
   /** Delete a project */
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this project?")) {
-      setProjects((prev) => prev.filter((p) => p.id !== id));
+      if (!supabase) return;
+
+      try {
+        const { error } = await supabase.from("projects").delete().eq("id", id);
+        if (error) throw error;
+
+        // Optimistic update
+        setProjects((prev) => prev.filter((p) => p.id !== id));
+      } catch (error) {
+        console.error("Error deleting project:", error);
+      }
     }
   };
 
@@ -148,98 +208,114 @@ export default function AdminProjects() {
       </div>
 
       {/* Project List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {projects.map((project) => (
-          <div key={project.id} className="glass rounded-2xl p-5 card-hover">
-            {/* Header */}
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-navy-700 to-crimson-900/50 flex items-center justify-center">
-                  <Layers className="w-5 h-5 text-white/40" />
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-20 text-text-muted">
+          <Loader2 className="w-8 h-8 animate-spin mb-4 text-crimson-500" />
+          <p className="text-sm">Loading projects...</p>
+        </div>
+      ) : projects.length === 0 ? (
+        <div className="glass rounded-2xl p-12 text-center text-text-muted">
+          <Layers className="w-12 h-12 mx-auto mb-4 opacity-50" />
+          <p>No projects found. Add one to get started.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {projects.map((project) => (
+            <div key={project.id} className="glass rounded-2xl p-5 card-hover">
+              {/* Header */}
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-navy-700 to-crimson-900/50 flex items-center justify-center overflow-hidden shrink-0">
+                    {project.image_url ? (
+                      <img src={project.image_url} alt={project.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <Layers className="w-5 h-5 text-white/40" />
+                    )}
+                  </div>
+                  <div>
+                    <h3
+                      className="text-base font-semibold text-text-primary"
+                      style={{ fontFamily: "var(--font-heading)" }}
+                    >
+                      {project.title}
+                    </h3>
+                    <span className="text-xs text-crimson-400">
+                      {project.category}
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <h3
-                    className="text-base font-semibold text-text-primary"
-                    style={{ fontFamily: "var(--font-heading)" }}
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => openEditForm(project)}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center 
+                      text-text-muted hover:text-text-primary hover:bg-white/5 transition-colors"
+                    aria-label="Edit project"
                   >
-                    {project.title}
-                  </h3>
-                  <span className="text-xs text-crimson-400">
-                    {project.category}
-                  </span>
+                    <Pencil className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(project.id)}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center 
+                      text-text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                    aria-label="Delete project"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
-              <div className="flex gap-1">
-                <button
-                  onClick={() => openEditForm(project)}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center 
-                    text-text-muted hover:text-text-primary hover:bg-white/5 transition-colors"
-                  aria-label="Edit project"
-                >
-                  <Pencil className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => handleDelete(project.id)}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center 
-                    text-text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors"
-                  aria-label="Delete project"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+
+              {/* Description */}
+              <p className="text-sm text-text-secondary line-clamp-2 mb-3">
+                {project.description}
+              </p>
+
+              {/* Tags */}
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {project.tags?.slice(0, 4).map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-2 py-0.5 text-xs text-text-muted rounded bg-white/5"
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
-            </div>
 
-            {/* Description */}
-            <p className="text-sm text-text-secondary line-clamp-2 mb-3">
-              {project.description}
-            </p>
+              {/* Links */}
+              <div className="flex gap-2">
+                {project.live_url && (
+                  <a
+                    href={project.live_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs text-text-muted hover:text-crimson-400 transition-colors"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                    Live
+                  </a>
+                )}
+                {project.github_url && (
+                  <a
+                    href={project.github_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs text-text-muted hover:text-navy-400 transition-colors"
+                  >
+                    <Github className="w-3 h-3" />
+                    Source
+                  </a>
+                )}
+              </div>
 
-            {/* Tags */}
-            <div className="flex flex-wrap gap-1.5 mb-3">
-              {project.tags.slice(0, 4).map((tag) => (
-                <span
-                  key={tag}
-                  className="px-2 py-0.5 text-xs text-text-muted rounded bg-white/5"
-                >
-                  {tag}
+              {project.featured && (
+                <span className="inline-block mt-3 px-2 py-0.5 text-xs font-medium text-yellow-400 bg-yellow-400/10 rounded">
+                  ⭐ Featured
                 </span>
-              ))}
-            </div>
-
-            {/* Links */}
-            <div className="flex gap-2">
-              {project.live_url && (
-                <a
-                  href={project.live_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-xs text-text-muted hover:text-crimson-400 transition-colors"
-                >
-                  <ExternalLink className="w-3 h-3" />
-                  Live
-                </a>
-              )}
-              {project.github_url && (
-                <a
-                  href={project.github_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-xs text-text-muted hover:text-navy-400 transition-colors"
-                >
-                  <Github className="w-3 h-3" />
-                  Source
-                </a>
               )}
             </div>
-
-            {project.featured && (
-              <span className="inline-block mt-3 px-2 py-0.5 text-xs font-medium text-yellow-400 bg-yellow-400/10 rounded">
-                ⭐ Featured
-              </span>
-            )}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Add/Edit Modal */}
       {isFormOpen && (
@@ -248,7 +324,7 @@ export default function AdminProjects() {
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => setIsFormOpen(false)}
           />
-          <div className="relative w-full max-w-lg max-h-[85vh] overflow-y-auto glass-strong rounded-2xl p-6">
+          <div className="relative w-full max-w-lg max-h-[85vh] overflow-y-auto glass-strong rounded-2xl p-6 shadow-2xl">
             {/* Modal Header */}
             <div className="flex items-center justify-between mb-6">
               <h2
@@ -261,6 +337,7 @@ export default function AdminProjects() {
                 onClick={() => setIsFormOpen(false)}
                 className="w-8 h-8 rounded-lg flex items-center justify-center 
                   text-text-muted hover:text-text-primary hover:bg-white/5 transition-colors"
+                aria-label="Close"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -310,13 +387,18 @@ export default function AdminProjects() {
                     }
                     className={inputClasses}
                   >
-                    {["Web Apps", "Mobile", "Cloud", "AI/ML", "DevOps"].map(
-                      (cat) => (
-                        <option key={cat} value={cat}>
-                          {cat}
-                        </option>
-                      )
-                    )}
+                    {[
+                      "Web Apps",
+                      "Mobile",
+                      "Cloud",
+                      "AI/ML",
+                      "DevOps",
+                      "Other",
+                    ].map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>
@@ -383,17 +465,17 @@ export default function AdminProjects() {
                   <button
                     type="button"
                     onClick={addTag}
-                    className="px-3 py-2 text-sm text-white rounded-xl gradient-primary hover:opacity-90"
+                    className="px-3 py-2 text-sm text-white rounded-xl gradient-primary hover:opacity-90 transition-opacity"
                   >
                     Add
                   </button>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
-                  {formData.tags.map((tag) => (
+                  {formData.tags?.map((tag) => (
                     <span
                       key={tag}
                       className="flex items-center gap-1 px-2 py-1 text-xs text-text-secondary 
-                        bg-white/5 rounded-lg"
+                        bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors"
                     >
                       {tag}
                       <button
@@ -408,34 +490,35 @@ export default function AdminProjects() {
               </div>
 
               {/* Featured Toggle */}
-              <label className="flex items-center gap-3 cursor-pointer">
+              <label className="flex items-center gap-3 cursor-pointer mt-2 bg-white/5 p-3 rounded-xl border border-white/10">
                 <input
                   type="checkbox"
                   checked={formData.featured}
                   onChange={(e) =>
                     setFormData({ ...formData, featured: e.target.checked })
                   }
-                  className="w-4 h-4 rounded accent-crimson-500"
+                  className="w-5 h-5 rounded border-white/20 bg-white/5 accent-crimson-500 focus:ring-1 focus:ring-crimson-500"
                 />
-                <span className="text-sm text-text-secondary">
-                  Featured project
+                <span className="text-sm font-medium text-text-primary">
+                  Featured Project <span className="text-text-muted font-normal ml-1">(Show prominently on portfolio)</span>
                 </span>
               </label>
             </div>
 
             {/* Form Actions */}
-            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/5">
+            <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-white/10">
               <button
                 onClick={() => setIsFormOpen(false)}
                 className="px-5 py-2.5 text-sm font-medium text-text-secondary rounded-xl 
-                  hover:bg-white/5 transition-colors"
+                  hover:bg-white/5 hover:text-text-primary transition-colors border border-transparent hover:border-white/10"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
+                disabled={!formData.title.trim() || !formData.description.trim()}
                 className="px-5 py-2.5 text-sm font-medium text-white rounded-xl gradient-primary 
-                  hover:opacity-90 transition-opacity shadow-lg shadow-crimson-600/20"
+                  hover:opacity-90 transition-opacity shadow-lg shadow-crimson-600/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {editingId ? "Update" : "Create"} Project
               </button>

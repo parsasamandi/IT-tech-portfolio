@@ -23,6 +23,7 @@ import {
   Code2,
   ChevronLeft,
 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 /** Admin navigation items */
 const ADMIN_NAV = [
@@ -126,10 +127,11 @@ export default function AdminSidebar({
             text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-colors
             ${collapsed ? "justify-center" : ""}`}
           title={collapsed ? "Logout" : undefined}
-          onClick={() => {
-            // Clear auth state and redirect to login
-            document.cookie = "admin_auth=; Max-Age=0; path=/admin";
-            window.location.href = "/admin/login";
+          onClick={async () => {
+            if (supabase) {
+              await supabase.auth.signOut();
+              window.location.href = "/admin/login";
+            }
           }}
         >
           <LogOut className="w-5 h-5 flex-shrink-0" />

@@ -3,39 +3,64 @@
 /**
  * Admin Login Page
  *
- * Simple login form for admin panel access.
- * Uses Supabase Auth when configured, or falls back to
- * environment variable credentials for demo mode.
+ * Secure login form for admin panel access.
+ * Uses Supabase Auth to authenticate administrators.
  */
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Code2, LogIn, Loader2, AlertCircle } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const checkUser = async () => {
+      if (!supabase) return;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        router.push("/admin");
+      }
+    };
+    checkUser();
+  }, [router]);
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
-    try {
-      // In demo mode, accept any non-empty credentials
-      // In production, this would use Supabase Auth
-      await new Promise((resolve) => setTimeout(resolve, 800));
+    if (!supabase) {
+      setError("Authentication service is not configured.");
+      setIsLoading(false);
+      return;
+    }
 
-      if (email && password) {
-        // Set a simple auth cookie (for demo purposes)
-        document.cookie = `admin_auth=true; path=/admin; max-age=${60 * 60 * 24}`;
-        window.location.href = "/admin";
-      } else {
-        setError("Please enter both email and password");
+    try {
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (authError) {
+        setError(authError.message);
+        return;
       }
-    } catch {
-      setError("Login failed. Please try again.");
+
+      if (data.session) {
+        // Successful login
+        router.push("/admin");
+        router.refresh();
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -137,9 +162,9 @@ export default function AdminLogin() {
             </button>
           </form>
 
-          {/* Demo hint */}
+          {/* Info hint */}
           <p className="text-center text-xs text-text-muted mt-6">
-            Demo mode: use any email & password to log in
+            Use your Supabase project credentials to sign in.
           </p>
         </div>
       </motion.div>
