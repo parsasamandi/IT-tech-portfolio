@@ -8,13 +8,13 @@ import { createClient } from "@supabase/supabase-js";
 
 // Environment variables (safe defaults for development/demo mode)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY || "";
 
 /**
  * Browser-side Supabase client (singleton)
  * Used in client components for auth and data fetching.
  */
-export const supabase = supabaseUrl
+export const supabase = (supabaseUrl && supabaseAnonKey)
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null;
 
