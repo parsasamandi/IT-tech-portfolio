@@ -5,16 +5,55 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { TESTIMONIALS } from "@/lib/constants";
+import { supabase } from "@/lib/supabase";
+import type { Testimonial } from "@/lib/types";
 
 export default function Testimonials() {
   const [current, setCurrent] = useState(0);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(TESTIMONIALS);
 
-  const next = useCallback(() => setCurrent((p) => (p + 1) % TESTIMONIALS.length), []);
-  const prev = () => setCurrent((p) => (p - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
+  const fetchTestimonials = useCallback(async () => {
+    try {
+      if (!supabase) return;
+      const { data, error } = await supabase
+        .from("testimonials")
+        .select("*")
+        .eq("featured", true)
+        .order("created_at", { ascending: false });
 
-  useEffect(() => { const t = setInterval(next, 6000); return () => clearInterval(t); }, [next]);
+      if (error && error.code !== "PGRST116" && error.code !== "42P01") throw error;
+      
+      if (data && data.length > 0) {
+        setTestimonials(data as Testimonial[]);
+      }
+    } catch (err) {
+      console.error("Error fetching testimonials:", err);
+    }
+  }, []);
 
-  const item = TESTIMONIALS[current];
+  useEffect(() => {
+    fetchTestimonials();
+  }, [fetchTestimonials]);
+
+  const next = useCallback(() => {
+    if (testimonials.length === 0) return;
+    setCurrent((p) => (p + 1) % testimonials.length);
+  }, [testimonials.length]);
+
+  const prev = () => {
+    if (testimonials.length === 0) return;
+    setCurrent((p) => (p - 1 + testimonials.length) % testimonials.length);
+  };
+
+  useEffect(() => { 
+    if (testimonials.length <= 1) return;
+    const t = setInterval(next, 6000); 
+    return () => clearInterval(t); 
+  }, [next, testimonials.length]);
+
+  if (testimonials.length === 0) return null;
+
+  const item = testimonials[current] || testimonials[0];
 
   return (
     <section id="testimonials" className="py-24 overflow-hidden bg-navy-50">
@@ -53,7 +92,7 @@ export default function Testimonials() {
               <div className="flex items-center justify-center gap-3">
                 <div className="w-11 h-11 rounded-full gradient-primary flex items-center justify-center
                   text-white font-semibold text-sm shadow-sm shadow-crimson-500/15">
-                  {item.name.split(" ").map((n) => n[0]).join("")}
+                  {item.name.split(" ").map((n) => n[0]).join("").substring(0, 2).toUpperCase()}
                 </div>
                 <div className="text-left">
                   <p className="text-sm font-semibold text-navy-900" style={{ fontFamily: "var(--font-heading)" }}>
@@ -67,28 +106,30 @@ export default function Testimonials() {
         </div>
 
         {/* Nav */}
-        <div className="flex items-center justify-center gap-4 mt-8">
-          <button onClick={prev}
-            className="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center
-              text-text-secondary hover:text-crimson-500 hover:border-crimson-200 transition-all shadow-sm"
-            aria-label="Previous">
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <div className="flex gap-1.5">
-            {TESTIMONIALS.map((_, i) => (
-              <button key={i} onClick={() => setCurrent(i)}
-                className={`h-2 rounded-full transition-all
-                  ${i === current ? "bg-crimson-500 w-6" : "bg-slate-200 w-2 hover:bg-slate-300"}`}
-                aria-label={`Go to ${i + 1}`} />
-            ))}
+        {testimonials.length > 1 && (
+          <div className="flex items-center justify-center gap-4 mt-8">
+            <button onClick={prev}
+              className="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center
+                text-text-secondary hover:text-crimson-500 hover:border-crimson-200 transition-all shadow-sm"
+              aria-label="Previous">
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <div className="flex gap-1.5 flex-wrap justify-center max-w-[200px]">
+              {testimonials.map((_, i) => (
+                <button key={i} onClick={() => setCurrent(i)}
+                  className={`h-2 rounded-full transition-all
+                    ${i === current ? "bg-crimson-500 w-6" : "bg-slate-200 w-2 hover:bg-slate-300"}`}
+                  aria-label={`Go to ${i + 1}`} />
+              ))}
+            </div>
+            <button onClick={next}
+              className="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center
+                text-text-secondary hover:text-crimson-500 hover:border-crimson-200 transition-all shadow-sm"
+              aria-label="Next">
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
-          <button onClick={next}
-            className="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center
-              text-text-secondary hover:text-crimson-500 hover:border-crimson-200 transition-all shadow-sm"
-            aria-label="Next">
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
+        )}
       </div>
     </section>
   );

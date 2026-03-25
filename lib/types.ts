@@ -75,12 +75,16 @@ export interface ServiceItem {
 
 /** Testimonial */
 export interface Testimonial {
+  id?: string;
   name: string;
   role: string;
-  company: string;
+  company?: string;
   content: string;
-  avatar: string;
+  avatar?: string;
   rating: number;
+  featured?: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
 /** Blog Article */

@@ -23,6 +23,7 @@ import {
   Code2,
   ChevronLeft,
   BookOpen,
+  Star,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -32,6 +33,7 @@ const ADMIN_NAV = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "Messages", href: "/admin/messages", icon: MessageSquare },
   { label: "Projects", href: "/admin/projects", icon: FolderOpen },
+  { label: "Testimonials", href: "/admin/testimonials", icon: Star },
   // { label: "Blog", href: "/admin/blog", icon: BookOpen },
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
