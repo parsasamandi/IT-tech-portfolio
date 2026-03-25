@@ -23,6 +23,15 @@ export default function AdminSettings() {
     tagline: "Next-Generation Technology Solutions",
     about_text:
       "With over a decade of experience in technology solutions, we specialize in building high-performance applications that scale.",
+    about_title: "Driving Digital Transformation",
+    about_paragraph1: "With over a decade of experience in technology solutions, we specialize in building high-performance applications that scale. Our team combines deep technical expertise with creative problem-solving.",
+    about_paragraph2: "From startups to enterprise clients, we've helped organizations across industries modernize their tech stacks, optimize workflows, and launch products that users love.",
+    about_stats: [
+      { value: 150, suffix: "+", label: "Projects Completed" },
+      { value: 80, suffix: "+", label: "Happy Clients" },
+      { value: 12, suffix: "+", label: "Years Experience" },
+      { value: 99, suffix: "%", label: "Client Satisfaction" },
+    ],
     email: "contact@itportfolio.dev",
     phone: "+1 (555) 123-4567",
     location: "San Francisco, CA",
@@ -56,6 +65,15 @@ export default function AdminSettings() {
           site_name: data.site_name || "",
           tagline: data.tagline || "",
           about_text: data.about_text || "",
+          about_title: data.about_title || "Driving Digital Transformation",
+          about_paragraph1: data.about_paragraph1 || "With over a decade of experience in technology solutions, we specialize in building high-performance applications that scale. Our team combines deep technical expertise with creative problem-solving.",
+          about_paragraph2: data.about_paragraph2 || "From startups to enterprise clients, we've helped organizations across industries modernize their tech stacks, optimize workflows, and launch products that users love.",
+          about_stats: data.about_stats || [
+            { value: 150, suffix: "+", label: "Projects Completed" },
+            { value: 80, suffix: "+", label: "Happy Clients" },
+            { value: 12, suffix: "+", label: "Years Experience" },
+            { value: 99, suffix: "%", label: "Client Satisfaction" },
+          ],
           email: data.email || "",
           phone: data.phone || "",
           location: data.location || "",
@@ -109,17 +127,18 @@ export default function AdminSettings() {
       }
 
       toast.success("Settings saved successfully!");
-    } catch (error) {
-      console.error("Error saving settings:", error);
-      toast.error("Failed to save settings");
+    } catch (error: any) {
+      console.error("Error saving settings:", JSON.stringify(error, null, 2), error);
+      toast.error(error?.message || "Failed to save settings");
     } finally {
       setIsSaving(false);
     }
   };
 
-  const inputClasses = `w-full px-4 py-2.5 text-sm text-text-primary bg-white/5 rounded-xl
-    border border-white/10 outline-none focus:border-crimson-500/50 
-    placeholder:text-text-muted transition-colors`;
+  const inputClasses = `w-full px-4 py-2.5 text-sm text-text-primary bg-overlay-hover rounded-xl
+    border border-border-subtle outline-none 
+    focus:border-crimson-500/50 focus:ring-2 focus:ring-crimson-500/15
+    placeholder:text-text-muted transition-all`;
 
   if (isLoading) {
     return (
@@ -212,6 +231,113 @@ export default function AdminSettings() {
                 rows={4}
                 className={`${inputClasses} resize-none`}
               />
+            </div>
+          </div>
+        </div>
+
+        {/* About Section Settings */}
+        <div className="glass rounded-2xl p-6">
+          <h2
+            className="text-lg font-semibold text-text-primary mb-5"
+            style={{ fontFamily: "var(--font-heading)" }}
+          >
+            About Us Section
+          </h2>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-text-secondary mb-1.5">
+                Title
+              </label>
+              <input
+                type="text"
+                value={settings.about_title}
+                onChange={(e) =>
+                  setSettings({ ...settings, about_title: e.target.value })
+                }
+                className={inputClasses}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-text-secondary mb-1.5">
+                Paragraph 1
+              </label>
+              <textarea
+                value={settings.about_paragraph1}
+                onChange={(e) =>
+                  setSettings({ ...settings, about_paragraph1: e.target.value })
+                }
+                rows={3}
+                className={`${inputClasses} resize-none`}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-text-secondary mb-1.5">
+                Paragraph 2
+              </label>
+              <textarea
+                value={settings.about_paragraph2}
+                onChange={(e) =>
+                  setSettings({ ...settings, about_paragraph2: e.target.value })
+                }
+                rows={3}
+                className={`${inputClasses} resize-none`}
+              />
+            </div>
+
+            <div className="pt-4">
+              <label className="block text-sm font-medium text-text-secondary mb-3">
+                Stats
+              </label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {settings.about_stats.map((stat, i) => (
+                  <div key={i} className="p-4 bg-overlay-hover border border-border-subtle rounded-xl space-y-3">
+                    <div>
+                      <label className="block text-xs text-text-muted mb-1">Value</label>
+                      <input
+                        type="number"
+                        value={stat.value}
+                        onChange={(e) => {
+                          const newStats = [...settings.about_stats];
+                          newStats[i].value = Number(e.target.value);
+                          setSettings({ ...settings, about_stats: newStats });
+                        }}
+                        className={inputClasses + " py-2 text-sm"}
+                      />
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="flex-1">
+                        <label className="block text-xs text-text-muted mb-1">Suffix (e.g. +, %)</label>
+                        <input
+                          type="text"
+                          value={stat.suffix}
+                          onChange={(e) => {
+                            const newStats = [...settings.about_stats];
+                            newStats[i].suffix = e.target.value;
+                            setSettings({ ...settings, about_stats: newStats });
+                          }}
+                          className={inputClasses + " py-2 text-sm"}
+                        />
+                      </div>
+                      <div className="flex-[2]">
+                        <label className="block text-xs text-text-muted mb-1">Label</label>
+                        <input
+                          type="text"
+                          value={stat.label}
+                          onChange={(e) => {
+                            const newStats = [...settings.about_stats];
+                            newStats[i].label = e.target.value;
+                            setSettings({ ...settings, about_stats: newStats });
+                          }}
+                          className={inputClasses + " py-2 text-sm"}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

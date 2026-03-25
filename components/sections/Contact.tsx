@@ -37,8 +37,9 @@ export default function Contact() {
       setFormData((p) => ({ ...p, [field]: e.target.value }));
 
   return (
-    <section id="contact" className="py-24 bg-navy-50 border-t border-navy-100/50">
-      <div className="max-w-6xl mx-auto px-6 sm:px-8">
+    <section id="contact" className="relative py-24 bg-white border-t border-navy-100/50 overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none opacity-[0.4] dot-pattern" />
+      <div className="relative z-10 max-w-6xl mx-auto px-6 sm:px-8">
         <SectionHeading title="Get in Touch" highlight="Touch" subtitle="Contact Us" />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -54,7 +55,7 @@ export default function Contact() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ delay: i * 0.08, duration: 0.4 }}
-                className="card p-4 flex items-center gap-3"
+                className="card bg-navy-50/50 backdrop-blur-sm p-4 flex items-center gap-3"
               >
                 <div className="w-10 h-10 rounded-lg gradient-primary flex items-center justify-center flex-shrink-0
                   shadow-sm shadow-crimson-500/15">
@@ -76,7 +77,7 @@ export default function Contact() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="card p-4"
+              className="card bg-navy-50/50 backdrop-blur-sm p-4"
             >
               <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">Working Hours</h4>
               <div className="space-y-1.5">
@@ -100,7 +101,7 @@ export default function Contact() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             onSubmit={handleSubmit}
-            className="lg:col-span-2 card p-6 md:p-7"
+            className="lg:col-span-2 card bg-navy-50/50 backdrop-blur-sm p-6 md:p-7"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>

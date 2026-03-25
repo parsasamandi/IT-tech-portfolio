@@ -36,6 +36,10 @@ export interface SiteSettings {
   site_name: string;
   tagline: string;
   about_text: string;
+  about_title?: string;
+  about_paragraph1?: string;
+  about_paragraph2?: string;
+  about_stats?: StatItem[];
   email: string;
   phone?: string;
   location?: string;
