@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -14,6 +15,53 @@ const inputCls = `w-full px-4 py-3 text-sm text-navy-900 bg-white rounded-xl
 export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
+  const [contactData, setContactData] = useState<{
+    email: string;
+    phone: string;
+    location: string;
+    working_hours: { day: string; time: string }[];
+  }>({
+    email: "contact@itportfolio.dev",
+    phone: "+1 (555) 123-4567",
+    location: "San Francisco, CA",
+    working_hours: [
+      { day: "Mon - Fri", time: "9:00 AM - 6:00 PM" },
+      { day: "Saturday", time: "10:00 AM - 4:00 PM" },
+      { day: "Sunday", time: "Closed" },
+    ],
+  });
+
+  useEffect(() => {
+    async function fetchSettings() {
+      if (!supabase) return;
+      try {
+        const { data, error } = await supabase
+          .from("settings")
+          .select("email, phone, location, working_hours")
+          .limit(1)
+          .single();
+        
+        if (error && error.code !== "PGRST116") throw error;
+        
+        if (data) {
+          setContactData({
+            email: data.email || "contact@itportfolio.dev",
+            phone: data.phone || "+1 (555) 123-4567",
+            location: data.location || "San Francisco, CA",
+            working_hours: data.working_hours || [
+              { day: "Mon - Fri", time: "9:00 AM - 6:00 PM" },
+              { day: "Saturday", time: "10:00 AM - 4:00 PM" },
+              { day: "Sunday", time: "Closed" },
+            ],
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching contact settings:", err);
+      }
+    }
+
+    fetchSettings();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,6 +84,12 @@ export default function Contact() {
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       setFormData((p) => ({ ...p, [field]: e.target.value }));
 
+  const infoItems = [
+    { Icon: Mail, label: "Email", value: contactData.email, href: `mailto:${contactData.email}` },
+    { Icon: Phone, label: "Phone", value: contactData.phone, href: `tel:${contactData.phone.replace(/\s+/g, "")}` },
+    { Icon: MapPin, label: "Location", value: contactData.location },
+  ];
+
   return (
     <section id="contact" className="relative py-24 bg-white border-t border-navy-100/50 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none opacity-[0.4] dot-pattern" />
@@ -45,11 +99,7 @@ export default function Contact() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Info */}
           <div className="space-y-4">
-            {[
-              { Icon: Mail, label: "Email", value: "contact@itportfolio.dev", href: "mailto:contact@itportfolio.dev" },
-              { Icon: Phone, label: "Phone", value: "+1 (555) 123-4567", href: "tel:+15551234567" },
-              { Icon: MapPin, label: "Location", value: "San Francisco, CA" },
-            ].map(({ Icon, label, value, href }, i) => (
+            {infoItems.map(({ Icon, label, value, href }, i) => (
               <motion.div key={label}
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -64,7 +114,7 @@ export default function Contact() {
                 <div>
                   <p className="text-[11px] text-text-muted uppercase tracking-wider font-semibold">{label}</p>
                   {href ? (
-                    <a href={href} className="text-sm font-medium text-navy-900 hover:text-crimson-600 transition-colors">{value}</a>
+                    <a href={href} className="text-sm font-medium text-navy-900 hover:text-crimson-600 transition-colors truncate block max-w-[180px] sm:max-w-none">{value}</a>
                   ) : (
                     <p className="text-sm font-medium text-navy-900">{value}</p>
                   )}
@@ -81,11 +131,7 @@ export default function Contact() {
             >
               <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">Working Hours</h4>
               <div className="space-y-1.5">
-                {[
-                  ["Mon - Fri", "9:00 AM - 6:00 PM"],
-                  ["Saturday", "10:00 AM - 4:00 PM"],
-                  ["Sunday", "Closed"],
-                ].map(([day, time]) => (
+                {contactData.working_hours.map(({ day, time }) => (
                   <div key={day} className="flex justify-between text-xs">
                     <span className="text-text-secondary">{day}</span>
                     <span className={`font-medium ${time === "Closed" ? "text-crimson-500" : "text-navy-900"}`}>{time}</span>

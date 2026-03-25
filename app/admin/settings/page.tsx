@@ -39,6 +39,11 @@ export default function AdminSettings() {
     linkedin_url: "https://linkedin.com",
     twitter_url: "https://twitter.com",
     resume_url: "",
+    working_hours: [
+      { day: "Mon - Fri", time: "9:00 AM - 6:00 PM" },
+      { day: "Saturday", time: "10:00 AM - 4:00 PM" },
+      { day: "Sunday", time: "Closed" },
+    ],
   });
 
   useEffect(() => {
@@ -81,6 +86,11 @@ export default function AdminSettings() {
           linkedin_url: data.linkedin_url || "",
           twitter_url: data.twitter_url || "",
           resume_url: data.resume_url || "",
+          working_hours: data.working_hours || [
+            { day: "Mon - Fri", time: "9:00 AM - 6:00 PM" },
+            { day: "Saturday", time: "10:00 AM - 4:00 PM" },
+            { day: "Sunday", time: "Closed" },
+          ],
         });
       }
     } catch (error) {
@@ -391,6 +401,53 @@ export default function AdminSettings() {
                 className={inputClasses}
               />
             </div>
+          </div>
+        </div>
+
+        {/* Working Hours Settings */}
+        <div className="glass rounded-2xl p-6">
+          <h2
+            className="text-lg font-semibold text-text-primary mb-5"
+            style={{ fontFamily: "var(--font-heading)" }}
+          >
+            Working Hours
+          </h2>
+
+          <div className="space-y-4">
+            {settings.working_hours.map((item, i) => (
+              <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1.5">
+                    Day Range
+                  </label>
+                  <input
+                    type="text"
+                    value={item.day}
+                    onChange={(e) => {
+                      const newHours = [...settings.working_hours];
+                      newHours[i].day = e.target.value;
+                      setSettings({ ...settings, working_hours: newHours });
+                    }}
+                    className={inputClasses}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1.5">
+                    Time Range
+                  </label>
+                  <input
+                    type="text"
+                    value={item.time}
+                    onChange={(e) => {
+                      const newHours = [...settings.working_hours];
+                      newHours[i].time = e.target.value;
+                      setSettings({ ...settings, working_hours: newHours });
+                    }}
+                    className={inputClasses}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 

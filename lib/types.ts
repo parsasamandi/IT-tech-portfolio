@@ -47,6 +47,7 @@ export interface SiteSettings {
   linkedin_url?: string;
   twitter_url?: string;
   resume_url?: string;
+  working_hours?: WorkingHour[];
 }
 
 /** Chat Message */
@@ -110,4 +111,10 @@ export interface StatItem {
   value: number;
   suffix: string;
   label: string;
+}
+
+/** Working Hour Item */
+export interface WorkingHour {
+  day: string;
+  time: string;
 }
