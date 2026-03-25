@@ -1,17 +1,57 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Code2, Github, Linkedin, Twitter, Mail, Heart, ArrowUp } from "lucide-react";
 import { NAV_LINKS, SERVICES, SOCIAL_LINKS } from "@/lib/constants";
-
-const SOCIAL_ITEMS = [
-  { icon: Github, label: "GitHub", href: SOCIAL_LINKS.github },
-  { icon: Linkedin, label: "LinkedIn", href: SOCIAL_LINKS.linkedin },
-  { icon: Twitter, label: "Twitter", href: SOCIAL_LINKS.twitter },
-  { icon: Mail, label: "Email", href: `mailto:${SOCIAL_LINKS.email}` },
-];
+import { supabase } from "@/lib/supabase";
 
 export default function Footer() {
+  const [settingsData, setSettingsData] = useState({
+    email: SOCIAL_LINKS.email,
+    phone: "+1 (555) 123-4567",
+    location: "San Francisco, CA",
+    github_url: SOCIAL_LINKS.github,
+    linkedin_url: SOCIAL_LINKS.linkedin,
+    twitter_url: SOCIAL_LINKS.twitter,
+  });
+
+  useEffect(() => {
+    async function fetchSettings() {
+      if (!supabase) return;
+      try {
+        const { data, error } = await supabase
+          .from("settings")
+          .select("email, phone, location, github_url, linkedin_url, twitter_url")
+          .limit(1)
+          .single();
+        
+        if (error && error.code !== "PGRST116") throw error;
+        
+        if (data) {
+          setSettingsData({
+            email: data.email || SOCIAL_LINKS.email,
+            phone: data.phone || "+1 (555) 123-4567",
+            location: data.location || "San Francisco, CA",
+            github_url: data.github_url || SOCIAL_LINKS.github,
+            linkedin_url: data.linkedin_url || SOCIAL_LINKS.linkedin,
+            twitter_url: data.twitter_url || SOCIAL_LINKS.twitter,
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching footer settings:", err);
+      }
+    }
+    fetchSettings();
+  }, []);
+
+  const SOCIAL_ITEMS = [
+    { icon: Github, label: "GitHub", href: settingsData.github_url },
+    { icon: Linkedin, label: "LinkedIn", href: settingsData.linkedin_url },
+    { icon: Twitter, label: "Twitter", href: settingsData.twitter_url },
+    { icon: Mail, label: "Email", href: `mailto:${settingsData.email}` },
+  ];
+
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   return (
@@ -78,15 +118,15 @@ export default function Footer() {
             <ul className="space-y-3 text-sm text-navy-300">
               <li className="flex items-start gap-2.5">
                 <Mail className="w-4 h-4 text-crimson-400 mt-0.5 flex-shrink-0" />
-                <a href={`mailto:${SOCIAL_LINKS.email}`} className="hover:text-crimson-400 transition-colors">{SOCIAL_LINKS.email}</a>
+                <a href={`mailto:${settingsData.email}`} className="hover:text-crimson-400 transition-colors truncate max-w-full block">{settingsData.email}</a>
               </li>
               <li className="flex items-start gap-2.5">
                 <span className="text-crimson-400 mt-0.5 flex-shrink-0 text-xs">📞</span>
-                <span>+1 (555) 123-4567</span>
+                <span>{settingsData.phone}</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <span className="text-crimson-400 mt-0.5 flex-shrink-0 text-xs">📍</span>
-                <span>San Francisco, CA</span>
+                <span>{settingsData.location}</span>
               </li>
             </ul>
           </motion.div>
