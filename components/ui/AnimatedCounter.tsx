@@ -55,7 +55,7 @@ export default function AnimatedCounter({
   return (
     <motion.span
       ref={ref}
-      className="text-4xl md:text-5xl font-bold gradient-text"
+      className="text-4xl md:text-5xl font-bold text-navy-900"
       style={{ fontFamily: "var(--font-heading)" }}
     >
       {count}
