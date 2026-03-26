@@ -163,6 +163,13 @@ body {
   background-clip: text;
 }
 
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-crimson-600), var(--color-crimson-500));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .glow-crimson {
   text-shadow: 0 0 30px rgba(225, 29, 72, 0.2);
 }
