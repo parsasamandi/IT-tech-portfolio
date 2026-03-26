@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Code2, Github, Linkedin, Twitter, Mail, Heart, ArrowUp } from "lucide-react";
+import { Github, Linkedin, Twitter, Mail, Heart, ArrowUp } from "lucide-react";
 import { NAV_LINKS, SERVICES, SOCIAL_LINKS } from "@/lib/constants";
 import { supabase } from "@/lib/supabase";
 
@@ -61,15 +61,10 @@ export default function Footer() {
           {/* Brand */}
           <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-9 h-9 rounded-lg gradient-primary flex items-center justify-center">
-                <Code2 className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-lg font-bold" style={{ fontFamily: "var(--font-heading)" }}>
-                IT<span className="text-crimson-400">Tech</span>
-              </span>
+              <img src="/syplat-logo.svg" alt="SYPLAT" className="h-6 w-auto" />
             </div>
             <p className="text-navy-300 text-sm leading-relaxed mb-5">
-              Delivering cutting-edge technology solutions with a focus on innovation, quality, and client success.
+              Delivering cutting-edge technology solutions with a focus on innovation, quality, and client success through SYPLAT's expertise.
             </p>
             <div className="flex gap-2">
               {SOCIAL_ITEMS.map((item) => (
@@ -136,7 +131,7 @@ export default function Footer() {
         <div className="border-t border-navy-700 pt-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-3">
             <p className="text-xs text-navy-400 flex items-center gap-1">
-              © {new Date().getFullYear()} ITTech Portfolio. All rights reserved.
+              © {new Date().getFullYear()} SYPLAT. All rights reserved.
             </p>
             <button onClick={scrollToTop}
               className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center

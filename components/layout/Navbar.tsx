@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Code2 } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { NAV_LINKS } from "@/lib/constants";
 
 export default function Navbar() {
@@ -41,12 +41,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
         {/* Logo */}
         <a href="#home" onClick={(e) => { e.preventDefault(); handleNavClick("#home"); }} className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shadow-lg shadow-crimson-600/20">
-            <Code2 className="w-6 h-6 text-white" />
-          </div>
-          <span className="text-xl font-extrabold tracking-tight text-navy-900" style={{ fontFamily: "var(--font-heading)" }}>
-            IT<span className="text-crimson-600">Tech</span>
-          </span>
+          <img src="/syplat-logo.svg" alt="SYPLAT" className="h-8 w-auto" />
         </a>
 
         {/* Desktop Nav */}

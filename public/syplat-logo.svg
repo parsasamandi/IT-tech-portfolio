@@ -1,0 +1,20 @@
+<svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- SYPLAT logo recreation -->
+  <defs>
+    <style>
+      .logo-text { font-family: Arial, sans-serif; font-weight: bold; font-size: 120px; }
+      .logo-black { fill: #000000; }
+      .logo-red { fill: #DC2626; }
+    </style>
+  </defs>
+  
+  <!-- SY -->
+  <text x="20" y="180" class="logo-text logo-black">SY</text>
+  
+  <!-- P (red background) -->
+  <rect x="240" y="80" width="120" height="120" rx="20" class="logo-red"/>
+  <text x="270" y="170" class="logo-text" fill="white">P</text>
+  
+  <!-- LAT -->
+  <text x="380" y="180" class="logo-text logo-black">LAT</text>
+</svg>

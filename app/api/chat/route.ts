@@ -11,7 +11,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 /** System prompt for the AI assistant */
-const SYSTEM_PROMPT = `You are a helpful AI assistant for ITTech, a professional IT solutions and technology services company. You help visitors learn about services, projects, and technologies. Be concise, friendly, and professional. If asked about pricing or specific project details, suggest they use the contact form for a detailed consultation.`;
+const SYSTEM_PROMPT = `You are a helpful AI assistant for SYPLAT, a professional technology solutions and IT services company. You help visitors learn about services, projects, and technologies. Be concise, friendly, and professional. If asked about pricing or specific project details, suggest they use the contact form for a detailed consultation.`;
 
 /** Mock responses for demo mode (when no OpenAI key is configured) */
 const MOCK_RESPONSES: Record<string, string> = {

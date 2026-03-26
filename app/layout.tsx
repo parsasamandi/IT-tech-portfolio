@@ -26,24 +26,24 @@ const outfit = Outfit({
  */
 export const metadata: Metadata = {
   title: {
-    default: "IT Tech Portfolio | Modern Developer Portfolio",
-    template: "%s | IT Tech Portfolio",
+    default: "SYPLAT | Modern Technology Solutions",
+    template: "%s | SYPLAT",
   },
   description:
-    "Professional IT solutions and technology services portfolio. Full-stack development, cloud architecture, and modern web applications.",
+    "SYPLAT delivers cutting-edge technology solutions and professional IT services. Full-stack development, cloud architecture, and modern web applications.",
   keywords: [
-    "portfolio",
-    "developer",
-    "IT solutions",
-    "technology",
-    "full-stack",
+    "SYPLAT",
+    "technology solutions",
+    "IT services",
+    "full-stack development",
     "web development",
+    "cloud architecture",
   ],
-  authors: [{ name: "IT Tech Portfolio" }],
+  authors: [{ name: "SYPLAT" }],
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "IT Tech Portfolio",
+    siteName: "SYPLAT",
   },
 };
 
