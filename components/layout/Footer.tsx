@@ -25,9 +25,9 @@ export default function Footer() {
           .select("email, phone, location, github_url, linkedin_url, twitter_url")
           .limit(1)
           .single();
-        
+
         if (error && error.code !== "PGRST116") throw error;
-        
+
         if (data) {
           setSettingsData({
             email: data.email || SOCIAL_LINKS.email,
@@ -136,8 +136,7 @@ export default function Footer() {
         <div className="border-t border-navy-700 pt-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-3">
             <p className="text-xs text-navy-400 flex items-center gap-1">
-              © {new Date().getFullYear()} ITTech Portfolio. Made with
-              <Heart className="w-3 h-3 text-crimson-500 fill-crimson-500" /> All rights reserved.
+              © {new Date().getFullYear()} ITTech Portfolio. All rights reserved.
             </p>
             <button onClick={scrollToTop}
               className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center
