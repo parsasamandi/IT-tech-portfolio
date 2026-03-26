@@ -60,8 +60,13 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
           {/* Brand */}
           <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <div className="flex items-center gap-2.5 mb-4">
-              <img src="/syplat-logo.svg" alt="SYPLAT" className="h-6 w-auto" />
+            <div className="flex items-center mb-4">
+              <img 
+                src="/logo-white.svg" 
+                alt="SYPLAT" 
+                className="h-12 w-auto"
+                style={{ maxWidth: '200px' }}
+              />
             </div>
             <p className="text-navy-300 text-sm leading-relaxed mb-5">
               Delivering cutting-edge technology solutions with a focus on innovation, quality, and client success through SYPLAT's expertise.

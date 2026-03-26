@@ -40,8 +40,13 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
         {/* Logo */}
-        <a href="#home" onClick={(e) => { e.preventDefault(); handleNavClick("#home"); }} className="flex items-center gap-3">
-          <img src="/syplat-logo.svg" alt="SYPLAT" className="h-8 w-auto" />
+        <a href="#home" onClick={(e) => { e.preventDefault(); handleNavClick("#home"); }} className="flex items-center">
+          <img 
+            src="/logo-black.svg" 
+            alt="SYPLAT" 
+            className="h-12 w-auto"
+            style={{ maxWidth: '220px' }}
+          />
         </a>
 
         {/* Desktop Nav */}
