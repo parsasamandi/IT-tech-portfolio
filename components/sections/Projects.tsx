@@ -77,12 +77,8 @@ export default function Projects() {
             ))}
           </div>
 
-          <div className="flex items-center justify-center gap-4 text-center">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent to-navy-200" />
-            <p className="text-navy-500 text-sm font-medium tracking-wide uppercase">
-              Built with Precision
-            </p>
-            <div className="flex-1 h-px bg-gradient-to-l from-transparent to-navy-200" />
+          <div className="flex items-center justify-center">
+            <div className="h-px bg-gradient-to-r from-transparent via-navy-200 to-transparent w-24 mx-auto" />
           </div>
         </div>
 
