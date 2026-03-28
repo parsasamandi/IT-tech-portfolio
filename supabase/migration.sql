@@ -158,16 +158,39 @@ CREATE TRIGGER update_settings_updated_at
 -- ============================================================
 
 
--- 7a. Ensure About + Contact columns exist on settings --------
+-- 7a. Create services table (if not exists) --------------------
+CREATE TABLE IF NOT EXISTS services (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  icon TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  display_order INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_services_display_order ON services(display_order);
+
+-- Enable RLS on services
+ALTER TABLE services ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public can view services"
+  ON services FOR SELECT
+  USING (true);
+
+
+-- 7b. Ensure About + Contact columns exist on settings --------
 ALTER TABLE settings
   ADD COLUMN IF NOT EXISTS about_title      TEXT,
   ADD COLUMN IF NOT EXISTS about_paragraph1 TEXT,
   ADD COLUMN IF NOT EXISTS about_paragraph2 TEXT,
   ADD COLUMN IF NOT EXISTS about_stats      JSONB,
-  ADD COLUMN IF NOT EXISTS working_hours    JSONB;
+  ADD COLUMN IF NOT EXISTS working_hours    JSONB,
+  ADD COLUMN IF NOT EXISTS hero_headline    TEXT,
+  ADD COLUMN IF NOT EXISTS hero_subtitle    TEXT,
+  ADD COLUMN IF NOT EXISTS hero_typed_words TEXT[];
 
 
--- 7b. Site settings (About + Contact) ------------------------
+-- 7c. Site settings (About + Contact + Hero) ----------------
 -- UPDATE forces correct values regardless of old column defaults.
 UPDATE settings SET
   site_name         = 'SYSPLAT',
@@ -183,6 +206,9 @@ UPDATE settings SET
   github_url        = 'https://github.com',
   linkedin_url      = 'https://linkedin.com',
   twitter_url       = 'https://twitter.com',
+  hero_headline     = 'Empowering Businesses',
+  hero_subtitle     = 'SYSPLAT builds intelligent digital platforms that transform how your business operates, grows, and scales.',
+  hero_typed_words  = ARRAY['Scalable Platforms', 'AI-Powered Solutions', 'Digital Growth Engines', 'Smart Automation', 'Unified Ecosystems'],
   updated_at        = now();
 
 -- Seed a row if the table is still empty.
@@ -190,7 +216,8 @@ INSERT INTO settings (
   site_name, tagline,
   about_title, about_paragraph1, about_paragraph2, about_stats,
   email, phone, location, working_hours,
-  github_url, linkedin_url, twitter_url
+  github_url, linkedin_url, twitter_url,
+  hero_headline, hero_subtitle, hero_typed_words
 )
 SELECT
   'SYSPLAT',
@@ -201,11 +228,86 @@ SELECT
   '[{"value":11,"suffix":"+","label":"Digital Platforms"},{"value":50,"suffix":"+","label":"Happy Clients"},{"value":100,"suffix":"+","label":"Projects Delivered"},{"value":99,"suffix":"%","label":"Client Satisfaction"}]'::jsonb,
   'contact@sysplat.com', '', 'Vancouver, BC',
   '[{"day":"Mon - Fri","time":"9:00 AM - 6:00 PM"},{"day":"Saturday","time":"Closed"},{"day":"Sunday","time":"Closed"}]'::jsonb,
-  'https://github.com', 'https://linkedin.com', 'https://twitter.com'
+  'https://github.com', 'https://linkedin.com', 'https://twitter.com',
+  'Empowering Businesses',
+  'SYSPLAT builds intelligent digital platforms that transform how your business operates, grows, and scales.',
+  ARRAY['Scalable Platforms', 'AI-Powered Solutions', 'Digital Growth Engines', 'Smart Automation', 'Unified Ecosystems']
 WHERE NOT EXISTS (SELECT 1 FROM settings);
 
 
--- 7c. Testimonials -------------------------------------------
+-- 7d. Services (11 Digital Platforms) -------------------------
+DELETE FROM services;
+
+INSERT INTO services (icon, title, description, display_order) VALUES
+(
+  'Briefcase',
+  'Business Plat',
+  'Strategic business development platform — business model development, market research, revenue strategy, operational optimization, and startup scaling support.',
+  1
+),
+(
+  'Megaphone',
+  'Digi Plat',
+  'Complete digital marketing engine — SEO & SEM campaigns, social media advertising, email & automation funnels, brand storytelling, and analytics optimization.',
+  2
+),
+(
+  'Globe',
+  'Web Plat',
+  'High-performance web design & development — custom UI/UX, corporate websites, e-commerce, WordPress & headless CMS, speed, security & SEO optimization.',
+  3
+),
+(
+  'PenTool',
+  'Cont Plat',
+  'Professional content creation — website & landing page copy, blog articles & SEO content, product descriptions, video scripts, and multilingual content.',
+  4
+),
+(
+  'Share2',
+  'Social Plat',
+  'Complete social media management — content planning & scheduling, creative post design, community engagement, paid campaigns, and growth reporting.',
+  5
+),
+(
+  'MessageSquare',
+  'Chatbot Plat',
+  'Smart AI chatbot systems — custom chatbot development, website & CRM integration, lead qualification, customer support automation, and multilingual bots.',
+  6
+),
+(
+  'CalendarCheck',
+  'Appointment Plat',
+  'Seamless booking & scheduling — online scheduling interface, calendar sync & reminders, payment integration, staff management, and industry-specific modules.',
+  7
+),
+(
+  'Brain',
+  'AI Plat',
+  'AI solutions engineered to automate, predict, and optimize — predictive analytics, NLP & computer vision, recommendation engines, and automation workflows.',
+  8
+),
+(
+  'Users',
+  'CRM Plat',
+  'Customizable CRM system — lead tracking & segmentation, sales pipeline automation, email & chatbot integration, reporting & analytics, and lifecycle management.',
+  9
+),
+(
+  'Dumbbell',
+  'Gym Plat',
+  'Complete fitness & wellness platform — member management, class scheduling, trainer dashboards, billing & subscriptions, and progress tracking.',
+  10
+),
+(
+  'Gift',
+  'LMS Plat',
+  'Loyalty management system — points & rewards, tiered membership levels, gamification features, CRM & e-commerce integration, and customer behavior analytics.',
+  11
+);
+
+
+-- 7e. Testimonials -------------------------------------------
 DELETE FROM testimonials;
 
 INSERT INTO testimonials (name, role, content, rating, featured) VALUES
@@ -229,7 +331,7 @@ INSERT INTO testimonials (name, role, content, rating, featured) VALUES
 );
 
 
--- 7d. Projects (Portfolio) -----------------------------------
+-- 7f. Projects (Portfolio) -----------------------------------
 DELETE FROM projects;
 
 INSERT INTO projects (title, description, category, image_url, tags, live_url, github_url, featured) VALUES
@@ -291,7 +393,7 @@ INSERT INTO projects (title, description, category, image_url, tags, live_url, g
 );
 
 
--- 7e. Blog Articles ------------------------------------------
+-- 7g. Blog Articles ------------------------------------------
 DELETE FROM blog_articles;
 
 INSERT INTO blog_articles (title, excerpt, image_url, tags, date, read_time, slug) VALUES
@@ -318,5 +420,5 @@ INSERT INTO blog_articles (title, excerpt, image_url, tags, date, read_time, slu
 );
 
 
--- 7f. Reload PostgREST schema cache --------------------------
+-- 7h. Reload PostgREST schema cache --------------------------
 NOTIFY pgrst, 'reload schema';
