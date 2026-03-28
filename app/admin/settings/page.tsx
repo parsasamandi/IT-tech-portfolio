@@ -26,12 +26,6 @@ export default function AdminSettings() {
     about_title: "Driving Digital Transformation",
     about_paragraph1: "With over a decade of experience in technology solutions, we specialize in building high-performance applications that scale. Our team combines deep technical expertise with creative problem-solving.",
     about_paragraph2: "From startups to enterprise clients, we've helped organizations across industries modernize their tech stacks, optimize workflows, and launch products that users love.",
-    about_stats: [
-      { value: 150, suffix: "+", label: "Projects Completed" },
-      { value: 80, suffix: "+", label: "Happy Clients" },
-      { value: 12, suffix: "+", label: "Years Experience" },
-      { value: 99, suffix: "%", label: "Client Satisfaction" },
-    ],
     email: "contact@itportfolio.dev",
     phone: "+1 (555) 123-4567",
     location: "San Francisco, CA",
@@ -73,12 +67,6 @@ export default function AdminSettings() {
           about_title: data.about_title || "Driving Digital Transformation",
           about_paragraph1: data.about_paragraph1 || "With over a decade of experience in technology solutions, we specialize in building high-performance applications that scale. Our team combines deep technical expertise with creative problem-solving.",
           about_paragraph2: data.about_paragraph2 || "From startups to enterprise clients, we've helped organizations across industries modernize their tech stacks, optimize workflows, and launch products that users love.",
-          about_stats: data.about_stats || [
-            { value: 150, suffix: "+", label: "Projects Completed" },
-            { value: 80, suffix: "+", label: "Happy Clients" },
-            { value: 12, suffix: "+", label: "Years Experience" },
-            { value: 99, suffix: "%", label: "Client Satisfaction" },
-          ],
           email: data.email || "",
           phone: data.phone || "",
           location: data.location || "",
@@ -295,59 +283,6 @@ export default function AdminSettings() {
                 rows={3}
                 className={`${inputClasses} resize-none`}
               />
-            </div>
-
-            <div className="pt-4">
-              <label className="block text-sm font-medium text-text-secondary mb-3">
-                Stats
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {settings.about_stats.map((stat, i) => (
-                  <div key={i} className="p-4 bg-overlay-hover border border-border-subtle rounded-xl space-y-3">
-                    <div>
-                      <label className="block text-xs text-text-muted mb-1">Value</label>
-                      <input
-                        type="number"
-                        value={stat.value}
-                        onChange={(e) => {
-                          const newStats = [...settings.about_stats];
-                          newStats[i].value = Number(e.target.value);
-                          setSettings({ ...settings, about_stats: newStats });
-                        }}
-                        className={inputClasses + " py-2 text-sm"}
-                      />
-                    </div>
-                    <div className="flex gap-3">
-                      <div className="flex-1">
-                        <label className="block text-xs text-text-muted mb-1">Suffix (e.g. +, %)</label>
-                        <input
-                          type="text"
-                          value={stat.suffix}
-                          onChange={(e) => {
-                            const newStats = [...settings.about_stats];
-                            newStats[i].suffix = e.target.value;
-                            setSettings({ ...settings, about_stats: newStats });
-                          }}
-                          className={inputClasses + " py-2 text-sm"}
-                        />
-                      </div>
-                      <div className="flex-[2]">
-                        <label className="block text-xs text-text-muted mb-1">Label</label>
-                        <input
-                          type="text"
-                          value={stat.label}
-                          onChange={(e) => {
-                            const newStats = [...settings.about_stats];
-                            newStats[i].label = e.target.value;
-                            setSettings({ ...settings, about_stats: newStats });
-                          }}
-                          className={inputClasses + " py-2 text-sm"}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>
