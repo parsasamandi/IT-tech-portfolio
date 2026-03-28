@@ -4,7 +4,6 @@
  * Admin Dashboard Page
  *
  * Overview page with:
- * - Stats cards (messages, projects, views, response time)
  * - Recent messages list
  * - Quick actions
  */
@@ -12,14 +11,12 @@ import { useState, useEffect } from "react";
 import {
   MessageSquare,
   FolderOpen,
-  Eye,
-  Clock,
   Mail,
   ArrowRight,
   Loader2,
+  Settings,
 } from "lucide-react";
 import Link from "next/link";
-import StatsCard from "@/components/admin/StatsCard";
 import { supabase } from "@/lib/supabase";
 
 type Message = {
@@ -33,10 +30,6 @@ type Message = {
 
 export default function AdminDashboard() {
   const [recentMessages, setRecentMessages] = useState<Message[]>([]);
-  const [stats, setStats] = useState({
-    totalMessages: 0,
-    activeProjects: 0,
-  });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -57,25 +50,6 @@ export default function AdminDashboard() {
 
       if (messagesError) throw messagesError;
       if (messages) setRecentMessages(messages);
-
-      // Fetch Total Messages Count
-      const { count: msgCount, error: msgCountError } = await supabase
-        .from("messages")
-        .select("*", { count: "exact", head: true });
-        
-      if (msgCountError) throw msgCountError;
-
-      // Fetch Active Projects Count
-      const { count: projCount, error: projCountError } = await supabase
-        .from("projects")
-        .select("*", { count: "exact", head: true });
-
-      if (projCountError) throw projCountError;
-
-      setStats({
-        totalMessages: msgCount || 0,
-        activeProjects: projCount || 0,
-      });
 
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
@@ -120,38 +94,6 @@ export default function AdminDashboard() {
         </div>
       ) : (
         <>
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <StatsCard
-              icon={MessageSquare}
-              label="Total Messages"
-              value={stats.totalMessages}
-              trend="+0%"
-              trendUp
-            />
-            <StatsCard
-              icon={FolderOpen}
-              label="Active Projects"
-              value={stats.activeProjects}
-              trend="+0"
-              trendUp
-            />
-            <StatsCard
-              icon={Eye}
-              label="Page Views"
-              value="---"
-              trend="0%"
-              trendUp
-            />
-            <StatsCard
-              icon={Clock}
-              label="Avg. Response"
-              value="---"
-              trend="0%"
-              trendUp
-            />
-          </div>
-
           {/* Recent Messages */}
           <div className="glass rounded-2xl p-6">
             <div className="flex items-center justify-between mb-6">
@@ -237,7 +179,7 @@ export default function AdminDashboard() {
           {
             label: "Site Settings",
             href: "/admin/settings",
-            icon: Clock,
+            icon: Settings,
             desc: "Update site configuration",
           },
         ].map((action) => (

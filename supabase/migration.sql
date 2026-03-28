@@ -130,7 +130,68 @@ CREATE POLICY "Authenticated users can view chat logs"
   USING (auth.role() = 'authenticated');
 
 -- ==========================================
--- 6. Auto-update updated_at trigger
+-- 6. Testimonials Table
+-- ==========================================
+CREATE TABLE IF NOT EXISTS testimonials (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  role TEXT NOT NULL,
+  content TEXT NOT NULL,
+  rating INTEGER DEFAULT 5,
+  featured BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Index for featured testimonials
+CREATE INDEX IF NOT EXISTS idx_testimonials_featured ON testimonials(featured);
+
+-- Enable RLS on testimonials
+ALTER TABLE testimonials ENABLE ROW LEVEL SECURITY;
+
+-- Public can view testimonials
+CREATE POLICY "Public can view testimonials"
+  ON testimonials FOR SELECT
+  USING (true);
+
+CREATE POLICY "Authenticated users can manage testimonials"
+  ON testimonials FOR ALL
+  USING (auth.role() = 'authenticated');
+
+-- ==========================================
+-- 7. Blog Articles Table
+-- ==========================================
+CREATE TABLE IF NOT EXISTS blog_articles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  excerpt TEXT NOT NULL,
+  image_url TEXT DEFAULT '',
+  tags TEXT[] DEFAULT '{}',
+  date DATE NOT NULL,
+  read_time TEXT DEFAULT '5 min read',
+  slug TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Index for slug lookup and date sorting
+CREATE INDEX IF NOT EXISTS idx_blog_articles_slug ON blog_articles(slug);
+CREATE INDEX IF NOT EXISTS idx_blog_articles_date ON blog_articles(date DESC);
+
+-- Enable RLS on blog_articles
+ALTER TABLE blog_articles ENABLE ROW LEVEL SECURITY;
+
+-- Public can view blog articles
+CREATE POLICY "Public can view blog articles"
+  ON blog_articles FOR SELECT
+  USING (true);
+
+CREATE POLICY "Authenticated users can manage blog articles"
+  ON blog_articles FOR ALL
+  USING (auth.role() = 'authenticated');
+
+-- ==========================================
+-- 8. Auto-update updated_at trigger
 -- ==========================================
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
@@ -148,17 +209,25 @@ CREATE TRIGGER update_settings_updated_at
   BEFORE UPDATE ON settings
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER update_testimonials_updated_at
+  BEFORE UPDATE ON testimonials
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_blog_articles_updated_at
+  BEFORE UPDATE ON blog_articles
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 
 -- ============================================================
--- 7. SYSPLAT FULL CONTENT SEED
+-- 9. SYSPLAT FULL CONTENT SEED
 -- ============================================================
 -- Run this entire section once in the Supabase SQL Editor.
 -- It populates every database-driven section of the website:
---   settings (About + Contact), testimonials, projects, blog_articles
+--   settings (About + Contact), services, testimonials, projects, blog_articles
 -- ============================================================
 
 
--- 7a. Create services table (if not exists) --------------------
+-- 9a. Create services table (if not exists) --------------------
 CREATE TABLE IF NOT EXISTS services (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   icon TEXT NOT NULL,
@@ -178,7 +247,7 @@ CREATE POLICY "Public can view services"
   USING (true);
 
 
--- 7b. Ensure About + Contact columns exist on settings --------
+-- 9b. Ensure About + Contact columns exist on settings --------
 ALTER TABLE settings
   ADD COLUMN IF NOT EXISTS about_title      TEXT,
   ADD COLUMN IF NOT EXISTS about_paragraph1 TEXT,
@@ -189,7 +258,7 @@ ALTER TABLE settings
   ADD COLUMN IF NOT EXISTS hero_typed_words TEXT[];
 
 
--- 7c. Site settings (About + Contact + Hero) ----------------
+-- 9c. Site settings (About + Contact + Hero) ----------------
 -- UPDATE forces correct values regardless of old column defaults.
 UPDATE settings SET
   site_name         = 'SYSPLAT',
@@ -232,7 +301,7 @@ SELECT
 WHERE NOT EXISTS (SELECT 1 FROM settings);
 
 
--- 7d. Services (11 Digital Platforms) -------------------------
+-- 9d. Services (11 Digital Platforms) -------------------------
 DELETE FROM services;
 
 INSERT INTO services (icon, title, description, display_order) VALUES
@@ -304,7 +373,7 @@ INSERT INTO services (icon, title, description, display_order) VALUES
 );
 
 
--- 7e. Testimonials -------------------------------------------
+-- 9e. Testimonials -------------------------------------------
 DELETE FROM testimonials;
 
 INSERT INTO testimonials (name, role, content, rating, featured) VALUES
@@ -328,7 +397,7 @@ INSERT INTO testimonials (name, role, content, rating, featured) VALUES
 );
 
 
--- 7f. Projects (Portfolio) -----------------------------------
+-- 9f. Projects (Portfolio) -----------------------------------
 DELETE FROM projects;
 
 INSERT INTO projects (title, description, category, image_url, tags, live_url, github_url, featured) VALUES
@@ -390,7 +459,7 @@ INSERT INTO projects (title, description, category, image_url, tags, live_url, g
 );
 
 
--- 7g. Blog Articles ------------------------------------------
+-- 9g. Blog Articles ------------------------------------------
 DELETE FROM blog_articles;
 
 INSERT INTO blog_articles (title, excerpt, image_url, tags, date, read_time, slug) VALUES
@@ -417,5 +486,5 @@ INSERT INTO blog_articles (title, excerpt, image_url, tags, date, read_time, slu
 );
 
 
--- 7h. Reload PostgREST schema cache --------------------------
+-- 9h. Reload PostgREST schema cache --------------------------
 NOTIFY pgrst, 'reload schema';
