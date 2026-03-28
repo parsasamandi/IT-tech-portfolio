@@ -4,25 +4,57 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown, Sparkles, Code, Cpu, Globe, Database, Layers, Monitor } from "lucide-react";
 import { useShouldReduceMotion } from "@/lib/hooks";
+import { supabase } from "@/lib/supabase";
 
-const TYPED_WORDS = [
-  "Mission-Critical Apps",
-  "Cloud Infrastructures",
-  "Sleek Web Solutions",
-  "Intelligent AI Logic",
-  "High-Performance Tech"
+const DEFAULT_TYPED_WORDS = [
+  "Scalable Platforms",
+  "AI-Powered Solutions",
+  "Digital Growth Engines",
+  "Smart Automation",
+  "Unified Ecosystems"
 ];
+
+const DEFAULT_HEADLINE = "Empowering Businesses";
+const DEFAULT_SUBTITLE = "SYSPLAT builds intelligent digital platforms that transform how your business operates, grows, and scales.";
 
 export default function Hero() {
   const [currentWord, setCurrentWord] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [typedWords, setTypedWords] = useState(DEFAULT_TYPED_WORDS);
+  const [headline, setHeadline] = useState(DEFAULT_HEADLINE);
+  const [subtitle, setSubtitle] = useState(DEFAULT_SUBTITLE);
   const shouldReduceMotion = useShouldReduceMotion();
+
+  // Fetch hero data from database
+  useEffect(() => {
+    const fetchHeroData = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("settings")
+          .select("hero_typed_words, hero_headline, hero_subtitle")
+          .single();
+
+        if (error) throw error;
+        if (data) {
+          if (data.hero_typed_words && Array.isArray(data.hero_typed_words)) {
+            setTypedWords(data.hero_typed_words);
+          }
+          if (data.hero_headline) setHeadline(data.hero_headline);
+          if (data.hero_subtitle) setSubtitle(data.hero_subtitle);
+        }
+      } catch (err) {
+        console.error("Error fetching hero data:", err);
+      }
+    };
+
+    fetchHeroData();
+  }, []);
 
   useEffect(() => {
     if (isPaused) return;
-    const word = TYPED_WORDS[currentWord];
+    const word = typedWords[currentWord];
     const speed = isDeleting ? 30 : 60;
     const timeout = setTimeout(() => {
       if (!isDeleting) {
@@ -37,12 +69,12 @@ export default function Hero() {
         setDisplayText(next);
         if (next === "") {
           setIsDeleting(false);
-          setCurrentWord((p) => (p + 1) % TYPED_WORDS.length);
+          setCurrentWord((p) => (p + 1) % typedWords.length);
         }
       }
     }, speed);
     return () => clearTimeout(timeout);
-  }, [displayText, isDeleting, currentWord, isPaused]);
+  }, [displayText, isDeleting, currentWord, isPaused, typedWords]);
 
   const floatingIcons = [
     { Icon: Code, top: "20%", left: "15%", delay: 0 },
@@ -102,7 +134,7 @@ export default function Hero() {
           className="inline-flex items-center gap-2 mb-10 px-5 py-2.5 rounded-full glass-card border border-white/60 shadow-md text-navy-900"
         >
           <Sparkles className="w-4 h-4 text-crimson-600" />
-          <span className="text-[13px] font-bold text-navy-600 tracking-wide uppercase">Engineering the Digital Future</span>
+          <span className="text-[13px] font-bold text-navy-600 tracking-wide uppercase">Intelligent Digital Platforms</span>
         </motion.div>
 
         <motion.h1
@@ -112,7 +144,16 @@ export default function Hero() {
           className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-navy-900 leading-[1.05] tracking-tight mb-8"
           style={{ fontFamily: "var(--font-heading)" }}
         >
-          We Build <span className="text-crimson-600 glow-crimson">Innovative</span><br />
+          {headline.split(" ").map((word, i) => (
+            <span key={i}>
+              {i === headline.split(" ").length - 1 ? (
+                <span className="text-crimson-600 glow-crimson">{word}</span>
+              ) : (
+                word
+              )}
+              {i < headline.split(" ").length - 1 && " "}
+            </span>
+          ))}<br />
           <span className="inline-block gradient-text-hero min-h-[1em]">
             {displayText}<span className="typing-cursor" />
           </span>
@@ -124,7 +165,7 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="max-w-2xl mx-auto text-lg md:text-xl text-navy-600 leading-relaxed mb-12"
         >
-          Premium technology solutions designed for scale and performance. We transform your most ambitious concepts into polished digital realities.
+          {subtitle}
         </motion.p>
 
         <motion.div
@@ -148,7 +189,7 @@ export default function Hero() {
           transition={{ duration: 1, delay: 1.2 }}
           className="mt-20 flex flex-wrap justify-center gap-3 opacity-60"
         >
-          {["React", "Next.js", "TypeScript", "AWS", "Node", "Docker"].map((tech) => (
+          {["Business", "Web", "AI", "Automation", "Marketing", "CRM"].map((tech) => (
             <span key={tech} className="px-4 py-2 text-xs font-black text-navy-900 bg-white border border-navy-200 rounded-lg shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-crimson-200 transition-all duration-300 cursor-default">
               {tech}
             </span>
