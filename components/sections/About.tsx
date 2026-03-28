@@ -118,7 +118,7 @@ export default function About() {
           >
             <a
               href="#projects"
-              className="group inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-navy-900 to-navy-800 text-white rounded-2xl hover:from-navy-800 hover:to-navy-700 transition-all duration-300 shadow-xl shadow-navy-900/30 hover:shadow-2xl hover:shadow-navy-900/50 hover:-translate-y-1"
+              className="group inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-crimson-500 to-crimson-600 text-white rounded-2xl hover:from-crimson-600 hover:to-crimson-700 transition-all duration-300 shadow-xl shadow-crimson-600/30 hover:shadow-2xl hover:shadow-crimson-600/50 hover:-translate-y-1"
               aria-label="View our portfolio of projects"
             >
               <span className="font-semibold text-base">Explore Our Work</span>
