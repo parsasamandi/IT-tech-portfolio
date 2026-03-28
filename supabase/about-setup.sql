@@ -1,11 +1,6 @@
--- Run this in Supabase SQL editor to add About Section fields to settings table
-ALTER TABLE settings 
-ADD COLUMN IF NOT EXISTS about_title TEXT DEFAULT 'Driving Digital Transformation',
-ADD COLUMN IF NOT EXISTS about_paragraph1 TEXT DEFAULT 'With over a decade of experience in technology solutions, we specialize in building high-performance applications that scale. Our team combines deep technical expertise with creative problem-solving.',
-ADD COLUMN IF NOT EXISTS about_paragraph2 TEXT DEFAULT 'From startups to enterprise clients, we''ve helped organizations across industries modernize their tech stacks, optimize workflows, and launch products that users love.',
-ADD COLUMN IF NOT EXISTS about_stats JSONB DEFAULT '[
-  {"value": 150, "suffix": "+", "label": "Projects Completed"},
-  {"value": 80, "suffix": "+", "label": "Happy Clients"},
-  {"value": 12, "suffix": "+", "label": "Years Experience"},
-  {"value": 99, "suffix": "%", "label": "Client Satisfaction"}
-]'::jsonb;
+-- Add About Section fields to settings table
+ALTER TABLE settings
+ADD COLUMN IF NOT EXISTS about_title      TEXT DEFAULT 'About SYSPLAT',
+ADD COLUMN IF NOT EXISTS about_paragraph1 TEXT DEFAULT 'SYSPLAT is a next-generation Information Technology company specializing in modular digital platforms designed to help businesses grow, automate, and scale. Each "Plat" represents a dedicated platform built with precision, performance, and modern engineering.',
+ADD COLUMN IF NOT EXISTS about_paragraph2 TEXT DEFAULT 'We combine strategic business development, high-end web engineering, AI-powered automation, digital marketing excellence, customer engagement systems, and enterprise-grade CRM and LMS solutions. Our mission is simple: build intelligent platforms that transform businesses into digital powerhouses.',
+ADD COLUMN IF NOT EXISTS about_stats      JSONB DEFAULT '[{"value":11,"suffix":"+","label":"Digital Platforms"},{"value":50,"suffix":"+","label":"Happy Clients"},{"value":100,"suffix":"+","label":"Projects Delivered"},{"value":99,"suffix":"%","label":"Client Satisfaction"}]'::jsonb;
