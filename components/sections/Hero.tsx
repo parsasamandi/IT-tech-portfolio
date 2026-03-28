@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, ChevronDown, Sparkles, Code, Cpu, Globe, Database, Layers, Monitor } from "lucide-react";
+import { ArrowRight, ChevronDown, Sparkles } from "lucide-react";
 import { useShouldReduceMotion } from "@/lib/hooks";
 import { supabase } from "@/lib/supabase";
 
@@ -77,15 +77,6 @@ export default function Hero() {
     return () => clearTimeout(timeout);
   }, [displayText, isDeleting, currentWord, isPaused, typedWords]);
 
-  const floatingIcons = [
-    { Icon: Code, top: "20%", left: "15%", delay: 0 },
-    { Icon: Cpu, top: "60%", left: "10%", delay: 2 },
-    { Icon: Globe, top: "30%", right: "20%", delay: 1 },
-    { Icon: Database, top: "70%", right: "15%", delay: 3 },
-    { Icon: Layers, top: "15%", right: "35%", delay: 1.5 },
-    { Icon: Monitor, top: "80%", left: "30%", delay: 2.5 },
-  ];
-
   return (
     <section id="home" className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-navy-50 px-6">
       {/* Background Layer */}
@@ -94,36 +85,6 @@ export default function Hero() {
         {/* Blur orbs - hidden on mobile to prevent jitter, reduced blur on tablet */}
         <div className="hidden md:block absolute top-1/4 left-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-crimson-100/30 rounded-full blur-[60px] md:blur-[120px] hero-orb" />
         <div className="hidden md:block absolute bottom-1/4 right-1/4 w-[350px] md:w-[600px] h-[350px] md:h-[600px] bg-navy-100/40 rounded-full blur-[70px] md:blur-[140px] hero-orb" style={{ animationDelay: "2s" }} />
-
-        {/* Floating Icons - static on mobile, animated on desktop */}
-        {floatingIcons.map((item, index) => (
-          <motion.div
-            key={index}
-            className="absolute text-navy-200/40 hidden sm:block"
-            style={{ top: item.top, left: item.left, right: item.right }}
-            animate={
-              shouldReduceMotion
-                ? { y: 0, rotate: 0, opacity: 0.4 }
-                : {
-                    y: [0, -30, 0],
-                    rotate: [0, 15, -15, 0],
-                    opacity: [0.3, 0.6, 0.3],
-                  }
-            }
-            transition={
-              shouldReduceMotion
-                ? { duration: 0 }
-                : {
-                    duration: 6,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: item.delay,
-                  }
-            }
-          >
-            <item.Icon className="w-16 h-16 sm:w-20 sm:h-20" strokeWidth={1} />
-          </motion.div>
-        ))}
       </div>
 
       {/* Hero Content - Forced Centering */}
