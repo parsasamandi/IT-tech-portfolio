@@ -82,6 +82,17 @@ export default function Hero() {
       {/* Background Layer */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 dot-pattern opacity-30" />
+        
+        {/* Background Tech Terms */}
+        <div className="absolute inset-0 overflow-hidden opacity-[0.03]">
+          <div className="absolute top-[20%] left-[10%] text-6xl md:text-8xl font-black text-navy-900 rotate-[-15deg] select-none">Business</div>
+          <div className="absolute top-[60%] right-[15%] text-4xl md:text-6xl font-black text-navy-900 rotate-[12deg] select-none">Web</div>
+          <div className="absolute top-[40%] left-[70%] text-5xl md:text-7xl font-black text-crimson-600 rotate-[-8deg] select-none">AI</div>
+          <div className="absolute bottom-[30%] left-[20%] text-3xl md:text-5xl font-black text-navy-900 rotate-[18deg] select-none">Automation</div>
+          <div className="absolute top-[25%] right-[40%] text-4xl md:text-6xl font-black text-navy-900 rotate-[-12deg] select-none">Marketing</div>
+          <div className="absolute bottom-[20%] right-[25%] text-5xl md:text-7xl font-black text-navy-900 rotate-[8deg] select-none">CRM</div>
+        </div>
+        
         {/* Blur orbs - hidden on mobile to prevent jitter, reduced blur on tablet */}
         <div className="hidden md:block absolute top-1/4 left-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-crimson-100/30 rounded-full blur-[60px] md:blur-[120px] hero-orb" />
         <div className="hidden md:block absolute bottom-1/4 right-1/4 w-[350px] md:w-[600px] h-[350px] md:h-[600px] bg-navy-100/40 rounded-full blur-[70px] md:blur-[140px] hero-orb" style={{ animationDelay: "2s" }} />
