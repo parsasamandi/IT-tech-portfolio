@@ -183,7 +183,6 @@ ALTER TABLE settings
   ADD COLUMN IF NOT EXISTS about_title      TEXT,
   ADD COLUMN IF NOT EXISTS about_paragraph1 TEXT,
   ADD COLUMN IF NOT EXISTS about_paragraph2 TEXT,
-  ADD COLUMN IF NOT EXISTS about_stats      JSONB,
   ADD COLUMN IF NOT EXISTS working_hours    JSONB,
   ADD COLUMN IF NOT EXISTS hero_headline    TEXT,
   ADD COLUMN IF NOT EXISTS hero_subtitle    TEXT,
@@ -198,7 +197,6 @@ UPDATE settings SET
   about_title       = 'About SYSPLAT',
   about_paragraph1  = 'SYSPLAT is a next-generation Information Technology company specializing in modular digital platforms designed to help businesses grow, automate, and scale. Each "Plat" represents a dedicated platform built with precision, performance, and modern engineering.',
   about_paragraph2  = 'We combine strategic business development, high-end web engineering, AI-powered automation, digital marketing excellence, customer engagement systems, and enterprise-grade CRM and LMS solutions. Our mission is simple: build intelligent platforms that transform businesses into digital powerhouses.',
-  about_stats       = '[{"value":11,"suffix":"+","label":"Digital Platforms"},{"value":50,"suffix":"+","label":"Happy Clients"},{"value":100,"suffix":"+","label":"Projects Delivered"},{"value":99,"suffix":"%","label":"Client Satisfaction"}]'::jsonb,
   email             = 'contact@sysplat.com',
   phone             = '',
   location          = 'Vancouver, BC',
@@ -214,7 +212,7 @@ UPDATE settings SET
 -- Seed a row if the table is still empty.
 INSERT INTO settings (
   site_name, tagline,
-  about_title, about_paragraph1, about_paragraph2, about_stats,
+  about_title, about_paragraph1, about_paragraph2,
   email, phone, location, working_hours,
   github_url, linkedin_url, twitter_url,
   hero_headline, hero_subtitle, hero_typed_words
@@ -225,7 +223,6 @@ SELECT
   'About SYSPLAT',
   'SYSPLAT is a next-generation Information Technology company specializing in modular digital platforms designed to help businesses grow, automate, and scale. Each "Plat" represents a dedicated platform built with precision, performance, and modern engineering.',
   'We combine strategic business development, high-end web engineering, AI-powered automation, digital marketing excellence, customer engagement systems, and enterprise-grade CRM and LMS solutions. Our mission is simple: build intelligent platforms that transform businesses into digital powerhouses.',
-  '[{"value":11,"suffix":"+","label":"Digital Platforms"},{"value":50,"suffix":"+","label":"Happy Clients"},{"value":100,"suffix":"+","label":"Projects Delivered"},{"value":99,"suffix":"%","label":"Client Satisfaction"}]'::jsonb,
   'contact@sysplat.com', '', 'Vancouver, BC',
   '[{"day":"Mon - Fri","time":"9:00 AM - 6:00 PM"},{"day":"Saturday","time":"Closed"},{"day":"Sunday","time":"Closed"}]'::jsonb,
   'https://github.com', 'https://linkedin.com', 'https://twitter.com',

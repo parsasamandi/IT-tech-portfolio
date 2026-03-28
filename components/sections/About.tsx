@@ -2,26 +2,19 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Award, Users, Clock, TrendingUp } from "lucide-react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
-import AnimatedCounter from "@/components/ui/AnimatedCounter";
-import { STATS } from "@/lib/constants";
 import { supabase } from "@/lib/supabase";
-import type { StatItem } from "@/lib/types";
-
-const STAT_ICONS = [Award, Users, Clock, TrendingUp];
 
 export default function About() {
   const [aboutData, setAboutData] = useState<{
     title: string;
     paragraph1: string;
     paragraph2: string;
-    stats: StatItem[];
   }>({
     title: "About SYSPLAT",
     paragraph1: "SYSPLAT is a next-generation Information Technology company specializing in modular digital platforms designed to help businesses grow, automate, and scale. Each \"Plat\" represents a dedicated platform built with precision, performance, and modern engineering.",
-    paragraph2: "We combine strategic business development, high-end web engineering, AI-powered automation, digital marketing excellence, customer engagement systems, and enterprise-grade CRM and LMS solutions. Our mission is simple: build intelligent platforms that transform businesses into digital powerhouses.",
-    stats: STATS
+    paragraph2: "We combine strategic business development, high-end web engineering, AI-powered automation, digital marketing excellence, customer engagement systems, and enterprise-grade CRM and LMS solutions. Our mission is simple: build intelligent platforms that transform businesses into digital powerhouses."
   });
 
   useEffect(() => {
@@ -30,7 +23,7 @@ export default function About() {
       try {
         const { data, error } = await supabase
           .from("settings")
-          .select("about_title, about_paragraph1, about_paragraph2, about_stats")
+          .select("about_title, about_paragraph1, about_paragraph2")
           .limit(1)
           .single();
         
@@ -40,8 +33,7 @@ export default function About() {
           setAboutData({
             title: data.about_title || "About SYSPLAT",
             paragraph1: data.about_paragraph1 || "SYSPLAT is a next-generation Information Technology company specializing in modular digital platforms designed to help businesses grow, automate, and scale. Each \"Plat\" represents a dedicated platform built with precision, performance, and modern engineering.",
-            paragraph2: data.about_paragraph2 || "We combine strategic business development, high-end web engineering, AI-powered automation, digital marketing excellence, customer engagement systems, and enterprise-grade CRM and LMS solutions. Our mission is simple: build intelligent platforms that transform businesses into digital powerhouses.",
-            stats: data.about_stats || STATS
+            paragraph2: data.about_paragraph2 || "We combine strategic business development, high-end web engineering, AI-powered automation, digital marketing excellence, customer engagement systems, and enterprise-grade CRM and LMS solutions. Our mission is simple: build intelligent platforms that transform businesses into digital powerhouses."
           });
         }
       } catch (err) {
@@ -57,59 +49,79 @@ export default function About() {
   const firstPart = titleParts.join(" ");
 
   return (
-    <section id="about" className="py-24 bg-navy-50">
-      <div className="max-w-6xl mx-auto px-6 sm:px-8">
+    <section id="about" className="py-32 bg-gradient-to-br from-navy-50 via-white to-slate-50 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-2 h-2 bg-crimson-400 rounded-full opacity-60" />
+        <div className="absolute top-40 right-20 w-1 h-1 bg-navy-300 rounded-full" />
+        <div className="absolute bottom-32 left-1/4 w-1.5 h-1.5 bg-crimson-300 rounded-full opacity-40" />
+      </div>
+
+      <div className="max-w-4xl mx-auto px-6 sm:px-8 relative">
         <SectionHeading title="About SYSPLAT" highlight="SYSPLAT" subtitle="Who We Are" />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
-          {/* Left */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="text-center max-w-3xl mx-auto"
+        >
+          {/* Company Badge */}
           <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.5 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full glass-card border border-crimson-100 shadow-sm"
           >
-            <h3 className="text-2xl font-bold text-navy-900 mb-5" style={{ fontFamily: "var(--font-heading)" }}>
-              {firstPart} {lastWord && <span className="text-crimson-600">{lastWord}</span>}
-              {!lastWord && aboutData.title}
-            </h3>
-            <p className="text-text-secondary leading-relaxed mb-3 text-[15px]">
-              {aboutData.paragraph1}
-            </p>
-            <p className="text-text-secondary leading-relaxed mb-7 text-[15px]">
-              {aboutData.paragraph2}
-            </p>
+            <Sparkles className="w-4 h-4 text-crimson-500" />
+            <span className="text-sm font-semibold text-navy-700 tracking-wide">Next-Generation IT Company</span>
           </motion.div>
 
-          {/* Right — stats */}
+          {/* Main Content */}
+          <div className="space-y-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+            >
+              <p className="text-lg md:text-xl leading-relaxed text-navy-700 font-medium">
+                {aboutData.paragraph1}
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="border-l-4 border-crimson-200 pl-6 bg-white/60 backdrop-blur-sm rounded-r-xl py-6 pr-6"
+            >
+              <p className="text-base md:text-lg leading-relaxed text-navy-600">
+                {aboutData.paragraph2}
+              </p>
+            </motion.div>
+          </div>
+
+          {/* Call to Action */}
           <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.5 }}
-            className="grid grid-cols-2 gap-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+            className="pt-12"
           >
-            {aboutData.stats.map((stat, i) => {
-              const Icon = STAT_ICONS[i % STAT_ICONS.length];
-              return (
-                <motion.div
-                  key={stat.label + i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ delay: i * 0.08, duration: 0.4 }}
-                  className="glass-card rounded-2xl p-5 text-center hover:border-crimson-200 card-shadow-hover hover:-translate-y-1 transition-all duration-300 cursor-default"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-crimson-50 flex items-center justify-center mx-auto mb-3">
-                    <Icon className="w-5 h-5 text-crimson-500" />
-                  </div>
-                  <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-                  <p className="text-xs text-text-secondary mt-1">{stat.label}</p>
-                </motion.div>
-              );
-            })}
+            <a 
+              href="#projects" 
+              className="group inline-flex items-center gap-3 px-8 py-4 bg-navy-900 text-white rounded-2xl hover:bg-navy-800 transition-all duration-300 hover:shadow-lg hover:shadow-navy-900/25 hover:-translate-y-1"
+            >
+              <span className="font-semibold">Explore Our Work</span>
+              <ArrowUpRight className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+            </a>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
