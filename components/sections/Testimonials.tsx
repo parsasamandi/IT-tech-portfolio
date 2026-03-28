@@ -22,7 +22,7 @@ export default function Testimonials() {
         .order("created_at", { ascending: false });
 
       if (error && error.code !== "PGRST116" && error.code !== "42P01") throw error;
-      
+
       if (data && data.length > 0) {
         setTestimonials(data as Testimonial[]);
       }
@@ -45,10 +45,10 @@ export default function Testimonials() {
     setCurrent((p) => (p - 1 + testimonials.length) % testimonials.length);
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     if (testimonials.length <= 1) return;
-    const t = setInterval(next, 6000); 
-    return () => clearInterval(t); 
+    const t = setInterval(next, 6000);
+    return () => clearInterval(t);
   }, [next, testimonials.length]);
 
   if (testimonials.length === 0) return null;

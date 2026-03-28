@@ -21,7 +21,7 @@ export default function Projects() {
           .from("projects")
           .select("*")
           .order("created_at", { ascending: false });
-        
+
         if (error) throw error;
         if (data && data.length > 0) setProjects(data as Project[]);
       } catch (err) {
@@ -35,7 +35,7 @@ export default function Projects() {
   }, []);
 
   const filtered = activeCategory === "All"
-    ? projects 
+    ? projects
     : projects.filter((p) => p.category === activeCategory);
 
   return (
@@ -129,17 +129,17 @@ export default function Projects() {
                   {/* Image Area */}
                   <div className="relative h-56 bg-navy-100 overflow-hidden shrink-0">
                     {project.image_url ? (
-                      <img 
-                        src={project.image_url} 
-                        alt={project.title} 
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                      <img
+                        src={project.image_url}
+                        alt={project.title}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center opacity-20 transform group-hover:scale-110 transition-transform duration-700">
                         <Layers className="w-20 h-20 text-navy-900" />
                       </div>
                     )}
-                    
+
                     {/* Hover Overlay */}
                     <div className="absolute inset-0 bg-navy-900/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center gap-4">
                       {project.live_url && (
@@ -169,7 +169,7 @@ export default function Projects() {
                     <p className="text-navy-600 text-sm leading-relaxed mb-6 line-clamp-3">
                       {project.description}
                     </p>
-                    
+
                     <div className="mt-auto">
                       <div className="flex flex-wrap gap-2">
                         {project.tags.map((t: string) => (

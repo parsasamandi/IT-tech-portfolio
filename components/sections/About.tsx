@@ -28,9 +28,9 @@ export default function About() {
           .select("about_title, about_paragraph1, about_paragraph2")
           .limit(1)
           .single();
-        
+
         if (error && error.code !== "PGRST116") throw error;
-        
+
         if (data) {
           setAboutData({
             title: data.about_title || "About SYSPLAT",
@@ -47,25 +47,16 @@ export default function About() {
   }, []);
 
   return (
-    <section 
-      id="about" 
+    <section
+      id="about"
       className="py-20 md:py-32 bg-gradient-to-br from-navy-50 via-white to-slate-50 relative overflow-hidden"
       aria-labelledby="about-heading"
     >
-      {/* Enhanced Background Elements */}
-      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <div className="absolute top-20 left-10 w-2 h-2 bg-crimson-400 rounded-full opacity-60" />
-        <div className="absolute top-40 right-20 w-1 h-1 bg-navy-300 rounded-full" />
-        <div className="absolute bottom-32 left-1/4 w-1.5 h-1.5 bg-crimson-300 rounded-full opacity-40" />
-        <div className="absolute top-1/2 right-1/3 w-2 h-2 bg-navy-200 rounded-full opacity-30" />
-        <div className="hidden md:block absolute top-1/3 right-10 w-[400px] h-[400px] bg-crimson-50/30 rounded-full blur-3xl" />
-      </div>
-
       <div className="max-w-5xl mx-auto px-6 sm:px-8 relative">
-        <SectionHeading 
-          title="About SYSPLAT" 
-          highlight="SYSPLAT" 
-          subtitle="Who We Are" 
+        <SectionHeading
+          title="About SYSPLAT"
+          highlight="SYSPLAT"
+          subtitle="Who We Are"
         />
 
         <motion.div
@@ -125,8 +116,8 @@ export default function About() {
             transition={{ delay: shouldReduceMotion ? 0 : 0.6, duration: shouldReduceMotion ? 0 : 0.6 }}
             className="pt-12 text-center"
           >
-            <a 
-              href="#projects" 
+            <a
+              href="#projects"
               className="group inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-navy-900 to-navy-800 text-white rounded-2xl hover:from-navy-800 hover:to-navy-700 transition-all duration-300 shadow-xl shadow-navy-900/30 hover:shadow-2xl hover:shadow-navy-900/50 hover:-translate-y-1"
               aria-label="View our portfolio of projects"
             >

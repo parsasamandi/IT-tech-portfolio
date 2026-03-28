@@ -40,9 +40,9 @@ export default function Contact() {
           .select("email, phone, location, working_hours")
           .limit(1)
           .single();
-        
+
         if (error && error.code !== "PGRST116") throw error;
-        
+
         if (data) {
           setContactData({
             email: data.email || "contact@sysplat.com",

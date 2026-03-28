@@ -19,7 +19,7 @@ export default function Blog() {
           .from("blog_articles")
           .select("*")
           .order("date", { ascending: false });
-        
+
         if (error) throw error;
         if (data) setArticles(data as BlogArticle[]);
       } catch (err: any) {
@@ -86,7 +86,7 @@ export default function Blog() {
                   <p className="text-sm text-navy-600 leading-relaxed mb-6 line-clamp-3">
                     {post.excerpt}
                   </p>
-                  
+
                   <div className="flex items-center justify-between pt-4 mt-auto border-t border-navy-100">
                     <div className="flex items-center gap-3 text-[11px] font-semibold text-navy-400 uppercase tracking-widest">
                       <span className="flex items-center gap-1.5">
