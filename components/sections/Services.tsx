@@ -50,34 +50,56 @@ export default function Services() {
   }, []);
 
   return (
-    <section id="services" className="section-padding bg-white">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
+    <section id="services" className="section-padding bg-gradient-to-br from-slate-50 via-white to-navy-50/30 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 relative">
         <SectionHeading title="Our Platforms" highlight="Platforms" subtitle="What We Build" />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
           {services.map((service, i) => {
             const Icon = ICON_MAP[service.icon] || Globe;
             return (
               <motion.div
                 key={service.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
-                transition={{ delay: i * 0.08, duration: 0.4 }}
-                className="group p-8 rounded-3xl bg-navy-50 border border-navy-100 card-shadow-hover transition-all duration-500"
+                transition={{ delay: i * 0.1, duration: 0.6, ease: "easeOut" }}
+                className="group relative"
               >
-                <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-8 group-hover:bg-crimson-600 transition-colors duration-500">
-                  <Icon className="w-8 h-8 text-navy-900 group-hover:text-white transition-colors duration-500" />
+                {/* Background Gradient */}
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white via-white to-navy-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                {/* Main Card */}
+                <div className="relative p-10 rounded-3xl glass-card border border-navy-100/60 hover:border-navy-200/80 shadow-lg shadow-navy-900/5 hover:shadow-xl hover:shadow-navy-900/10 transition-all duration-500 hover:-translate-y-1 bg-white/80 backdrop-blur-sm">
+                  {/* Icon Container */}
+                  <div className="relative mb-8">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-navy-50 to-white shadow-lg shadow-navy-900/10 flex items-center justify-center group-hover:bg-gradient-to-br group-hover:from-crimson-500 group-hover:to-crimson-600 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-crimson-500/25">
+                      <Icon className="w-9 h-9 text-navy-700 group-hover:text-white transition-colors duration-500 group-hover:scale-110" />
+                    </div>
+                    {/* Icon Glow Effect */}
+                    <div className="absolute inset-0 w-20 h-20 rounded-2xl bg-crimson-500/10 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
+                  </div>
+
+                  {/* Content */}
+                  <div className="space-y-6">
+                    <h3 className="text-2xl font-black text-navy-900 group-hover:text-navy-800 transition-colors duration-300 leading-tight" style={{ fontFamily: "var(--font-heading)" }}>
+                      {service.title}
+                    </h3>
+                    <p className="text-navy-600 leading-relaxed text-base group-hover:text-navy-700 transition-colors duration-300">
+                      {service.description}
+                    </p>
+
+                    {/* Enhanced Learn More Link */}
+                    <div className="pt-2">
+                      <a href="#contact" className="inline-flex items-center gap-3 text-sm font-bold text-navy-800 group-hover:text-crimson-600 transition-all duration-300 hover:gap-4">
+                        <span>Learn More</span>
+                        <div className="w-8 h-8 rounded-full bg-navy-100 group-hover:bg-crimson-100 flex items-center justify-center transition-all duration-300">
+                          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                        </div>
+                      </a>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-xl font-black text-navy-900 mb-4 group-hover:text-crimson-600 transition-colors" style={{ fontFamily: "var(--font-heading)" }}>
-                  {service.title}
-                </h3>
-                <p className="text-navy-600 leading-relaxed mb-6">
-                  {service.description}
-                </p>
-                <a href="#contact" className="inline-flex items-center gap-2 text-sm font-bold text-navy-900 group-hover:text-crimson-600 transition-colors">
-                  Learn More <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </a>
               </motion.div>
             );
           })}
