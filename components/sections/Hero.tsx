@@ -143,20 +143,6 @@ export default function Hero() {
             Get in Touch
           </a>
         </motion.div>
-
-        {/* Tech Badges */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1.2 }}
-          className="mt-20 flex flex-wrap justify-center gap-3 opacity-60"
-        >
-          {["Business", "Web", "AI", "Automation", "Marketing", "CRM"].map((tech) => (
-            <span key={tech} className="px-4 py-2 text-xs font-black text-navy-900 bg-white border border-navy-200 rounded-lg shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-crimson-200 transition-all duration-300 cursor-default">
-              {tech}
-            </span>
-          ))}
-        </motion.div>
       </div>
 
       {/* Scroll indicator - static on mobile to prevent jitter */}
