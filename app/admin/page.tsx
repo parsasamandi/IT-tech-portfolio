@@ -24,7 +24,6 @@ type Message = {
   name: string;
   email: string;
   subject: string;
-  is_read: boolean;
   created_at: string;
 };
 
@@ -44,7 +43,7 @@ export default function AdminDashboard() {
       // Fetch Recent Messages
       const { data: messages, error: messagesError } = await supabase
         .from("messages")
-        .select("id, name, email, subject, is_read, created_at")
+        .select("id, name, email, subject, created_at")
         .order("created_at", { ascending: false })
         .limit(4);
 
@@ -121,12 +120,7 @@ export default function AdminDashboard() {
                 {recentMessages.map((msg) => (
                   <div
                     key={msg.id}
-                    className={`flex items-center justify-between p-4 rounded-xl transition-colors
-                      ${
-                        msg.is_read
-                          ? "bg-white/[0.02] hover:bg-white/[0.04]"
-                          : "bg-crimson-500/5 hover:bg-crimson-500/10 border-l-2 border-crimson-500"
-                      }`}
+                    className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
                   >
                     <div className="flex items-center gap-4">
                       {/* Avatar */}
@@ -149,9 +143,6 @@ export default function AdminDashboard() {
                       <span className="text-xs text-text-muted hidden sm:block">
                         {formatTimeAgo(msg.created_at)}
                       </span>
-                      {!msg.is_read && (
-                        <span className="w-2 h-2 rounded-full bg-crimson-500" />
-                      )}
                     </div>
                   </div>
                 ))}
