@@ -44,47 +44,46 @@ export default function Projects() {
         <SectionHeading title="Our Work" highlight="Work" subtitle="Portfolio" />
 
         {/* Description */}
-        <div className="max-w-3xl mx-auto text-center mb-12">
-          <p className="text-navy-600 text-base leading-relaxed mb-4">
-            SYSPLAT delivers high-performance digital platforms across industries:
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm text-navy-700 mb-6">
-            <div className="flex items-center gap-2 justify-center">
-              <span className="w-1.5 h-1.5 rounded-full bg-crimson-500" />
-              <span>Corporate websites</span>
-            </div>
-            <div className="flex items-center gap-2 justify-center">
-              <span className="w-1.5 h-1.5 rounded-full bg-crimson-500" />
-              <span>E-commerce stores</span>
-            </div>
-            <div className="flex items-center gap-2 justify-center">
-              <span className="w-1.5 h-1.5 rounded-full bg-crimson-500" />
-              <span>AI chatbots</span>
-            </div>
-            <div className="flex items-center gap-2 justify-center">
-              <span className="w-1.5 h-1.5 rounded-full bg-crimson-500" />
-              <span>CRM dashboards</span>
-            </div>
-            <div className="flex items-center gap-2 justify-center">
-              <span className="w-1.5 h-1.5 rounded-full bg-crimson-500" />
-              <span>Booking systems</span>
-            </div>
-            <div className="flex items-center gap-2 justify-center">
-              <span className="w-1.5 h-1.5 rounded-full bg-crimson-500" />
-              <span>Loyalty platforms</span>
-            </div>
-            <div className="flex items-center gap-2 justify-center">
-              <span className="w-1.5 h-1.5 rounded-full bg-crimson-500" />
-              <span>Social media campaigns</span>
-            </div>
-            <div className="flex items-center gap-2 justify-center">
-              <span className="w-1.5 h-1.5 rounded-full bg-crimson-500" />
-              <span>Digital branding & content</span>
-            </div>
+        <div className="max-w-3xl mx-auto mb-16">
+          <div className="text-center mb-12">
+            <p className="text-navy-600 text-lg leading-relaxed mb-2">
+              SYSPLAT delivers high-performance digital platforms across industries
+            </p>
+            <div className="h-1 w-16 bg-gradient-to-r from-crimson-500 to-crimson-400 mx-auto rounded-full opacity-60" />
           </div>
-          <p className="text-navy-600 text-sm italic">
-            Each project is built with precision, speed, and a focus on measurable results.
-          </p>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+            {[
+              "Corporate websites",
+              "E-commerce stores",
+              "AI chatbots",
+              "CRM dashboards",
+              "Booking systems",
+              "Loyalty platforms",
+              "Social media campaigns",
+              "Digital branding & content"
+            ].map((item, i) => (
+              <div
+                key={item}
+                className="group flex flex-col items-center gap-3 p-4 rounded-2xl transition-all duration-300 hover:bg-navy-50/50"
+              >
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-crimson-500 to-crimson-600 flex items-center justify-center shadow-md group-hover:shadow-crimson-500/40 transition-shadow">
+                  <span className="w-2 h-2 rounded-full bg-white" />
+                </div>
+                <span className="text-sm font-semibold text-navy-700 text-center group-hover:text-navy-900 transition-colors">
+                  {item}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex items-center justify-center gap-4 text-center">
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent to-navy-200" />
+            <p className="text-navy-500 text-sm font-medium tracking-wide uppercase">
+              Built with Precision
+            </p>
+            <div className="flex-1 h-px bg-gradient-to-l from-transparent to-navy-200" />
+          </div>
         </div>
 
         {/* Filter */}
