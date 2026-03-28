@@ -26,24 +26,27 @@ const outfit = Outfit({
  */
 export const metadata: Metadata = {
   title: {
-    default: "SYPLAT | Modern Technology Solutions",
-    template: "%s | SYPLAT",
+    default: "SYSPLAT | Intelligent Digital Platforms",
+    template: "%s | SYSPLAT",
   },
   description:
-    "SYPLAT delivers cutting-edge technology solutions and professional IT services. Full-stack development, cloud architecture, and modern web applications.",
+    "SYSPLAT builds scalable, modern, and AI-powered platforms that accelerate growth, automate operations, and elevate your digital presence. Business, Web, AI, CRM, Automation, Marketing.",
   keywords: [
-    "SYPLAT",
-    "technology solutions",
-    "IT services",
-    "full-stack development",
+    "SYSPLAT",
+    "digital platforms",
+    "AI automation",
     "web development",
-    "cloud architecture",
+    "CRM",
+    "business development",
+    "digital marketing",
+    "chatbot",
+    "loyalty management",
   ],
-  authors: [{ name: "SYPLAT" }],
+  authors: [{ name: "SYSPLAT" }],
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "SYPLAT",
+    siteName: "SYSPLAT",
   },
 };
 

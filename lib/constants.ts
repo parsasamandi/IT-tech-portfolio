@@ -22,7 +22,6 @@ export const NAV_LINKS: NavLink[] = [
   { label: "About", href: "#about" },
   { label: "Projects", href: "#projects" },
   { label: "Testimonials", href: "#testimonials" },
-  { label: "Blog", href: "#blog" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -31,40 +30,70 @@ export const NAV_LINKS: NavLink[] = [
 // ============================================
 export const SERVICES: ServiceItem[] = [
   {
+    icon: "Briefcase",
+    title: "Business Plat",
+    description:
+      "Strategic business development platform — business model development, market research, revenue strategy, operational optimization, and startup scaling support.",
+  },
+  {
+    icon: "Megaphone",
+    title: "Digi Plat",
+    description:
+      "Complete digital marketing engine — SEO & SEM campaigns, social media advertising, email & automation funnels, brand storytelling, and analytics optimization.",
+  },
+  {
     icon: "Globe",
-    title: "Web Development",
+    title: "Web Plat",
     description:
-      "Building responsive, high-performance web applications with modern frameworks like React, Next.js, and TypeScript.",
+      "High-performance web design & development — custom UI/UX, corporate websites, e-commerce, WordPress & headless CMS, speed, security & SEO optimization.",
   },
   {
-    icon: "Server",
-    title: "Backend & APIs",
+    icon: "PenTool",
+    title: "Cont Plat",
     description:
-      "Designing scalable server architectures, RESTful APIs, and microservices using Node.js, Python, and cloud-native solutions.",
+      "Professional content creation — website & landing page copy, blog articles & SEO content, product descriptions, video scripts, and multilingual content.",
   },
   {
-    icon: "Cloud",
-    title: "Cloud & DevOps",
+    icon: "Share2",
+    title: "Social Plat",
     description:
-      "Deploying and managing infrastructure on AWS, Azure, and GCP with CI/CD pipelines, Docker, and Kubernetes.",
+      "Complete social media management — content planning & scheduling, creative post design, community engagement, paid campaigns, and growth reporting.",
   },
   {
-    icon: "Smartphone",
-    title: "Mobile Development",
+    icon: "MessageSquare",
+    title: "Chatbot Plat",
     description:
-      "Creating cross-platform mobile applications with React Native and Flutter for iOS and Android.",
+      "Smart AI chatbot systems — custom chatbot development, website & CRM integration, lead qualification, customer support automation, and multilingual bots.",
   },
   {
-    icon: "Shield",
-    title: "Cybersecurity",
+    icon: "CalendarCheck",
+    title: "Appointment Plat",
     description:
-      "Implementing security best practices, penetration testing, vulnerability assessments, and compliance solutions.",
+      "Seamless booking & scheduling — online scheduling interface, calendar sync & reminders, payment integration, staff management, and industry-specific modules.",
   },
   {
     icon: "Brain",
-    title: "AI & Machine Learning",
+    title: "AI Plat",
     description:
-      "Integrating intelligent AI solutions, natural language processing, and predictive analytics into business applications.",
+      "AI solutions engineered to automate, predict, and optimize — predictive analytics, NLP & computer vision, recommendation engines, and automation workflows.",
+  },
+  {
+    icon: "Users",
+    title: "CRM Plat",
+    description:
+      "Customizable CRM system — lead tracking & segmentation, sales pipeline automation, email & chatbot integration, reporting & analytics, and lifecycle management.",
+  },
+  {
+    icon: "Dumbbell",
+    title: "Gym Plat",
+    description:
+      "Complete fitness & wellness platform — member management, class scheduling, trainer dashboards, billing & subscriptions, and progress tracking.",
+  },
+  {
+    icon: "Gift",
+    title: "LMS Plat",
+    description:
+      "Loyalty management system — points & rewards, tiered membership levels, gamification features, CRM & e-commerce integration, and customer behavior analytics.",
   },
 ];
 
@@ -72,9 +101,9 @@ export const SERVICES: ServiceItem[] = [
 // Stats
 // ============================================
 export const STATS: StatItem[] = [
-  { value: 150, suffix: "+", label: "Projects Completed" },
-  { value: 80, suffix: "+", label: "Happy Clients" },
-  { value: 12, suffix: "+", label: "Years Experience" },
+  { value: 11, suffix: "+", label: "Digital Platforms" },
+  { value: 50, suffix: "+", label: "Happy Clients" },
+  { value: 100, suffix: "+", label: "Projects Delivered" },
   { value: 99, suffix: "%", label: "Client Satisfaction" },
 ];
 
@@ -83,11 +112,11 @@ export const STATS: StatItem[] = [
 // ============================================
 export const PROJECT_CATEGORIES = [
   "All",
-  "Web Apps",
-  "Mobile",
-  "Cloud",
-  "AI/ML",
-  "DevOps",
+  "Websites",
+  "AI & Chatbots",
+  "CRM & Dashboards",
+  "Booking Systems",
+  "Marketing",
 ];
 
 // ============================================
@@ -96,87 +125,115 @@ export const PROJECT_CATEGORIES = [
 export const SAMPLE_PROJECTS: Project[] = [
   {
     id: "1",
-    title: "E-Commerce Platform",
+    title: "Corporate Website Redesign",
     description:
-      "Full-stack e-commerce solution with real-time inventory, payment processing, and admin dashboard built with Next.js and Stripe.",
-    category: "Web Apps",
-    image_url: "/projects/ecommerce.jpg",
-    tags: ["Next.js", "TypeScript", "Stripe", "PostgreSQL"],
+      "High-performance corporate website with modern design, SEO optimization, and a headless CMS for seamless content management.",
+    category: "Websites",
+    image_url: "",
+    tags: ["Next.js", "Tailwind CSS", "Headless CMS", "SEO"],
     live_url: "#",
-    github_url: "#",
+    github_url: "",
     featured: true,
-    created_at: "2024-01-15",
-    updated_at: "2024-01-15",
+    created_at: "2025-01-15",
+    updated_at: "2025-01-15",
   },
   {
     id: "2",
-    title: "Health Tracker App",
+    title: "E-Commerce Store",
     description:
-      "Cross-platform mobile app for health monitoring with wearable device integration, AI-powered insights, and doctor consultation features.",
-    category: "Mobile",
-    image_url: "/projects/health.jpg",
-    tags: ["React Native", "Firebase", "TensorFlow", "Node.js"],
+      "Full-featured e-commerce platform with payment integration, inventory management, and analytics dashboard.",
+    category: "Websites",
+    image_url: "",
+    tags: ["React", "Stripe", "Node.js", "PostgreSQL"],
     live_url: "#",
-    github_url: "#",
+    github_url: "",
     featured: true,
-    created_at: "2024-02-20",
-    updated_at: "2024-02-20",
+    created_at: "2025-02-10",
+    updated_at: "2025-02-10",
   },
   {
     id: "3",
-    title: "Cloud Infrastructure Manager",
+    title: "AI Customer Support Chatbot",
     description:
-      "Enterprise cloud orchestration platform with multi-cloud support, cost optimization, and automated scaling policies.",
-    category: "Cloud",
-    image_url: "/projects/cloud.jpg",
-    tags: ["AWS", "Terraform", "Go", "Kubernetes"],
+      "Multilingual AI-powered chatbot with lead qualification, CRM integration, and automated customer support flows.",
+    category: "AI & Chatbots",
+    image_url: "",
+    tags: ["OpenAI", "NLP", "CRM Integration", "Multilingual"],
     live_url: "#",
-    github_url: "#",
+    github_url: "",
     featured: true,
-    created_at: "2024-03-10",
-    updated_at: "2024-03-10",
+    created_at: "2025-03-05",
+    updated_at: "2025-03-05",
   },
   {
     id: "4",
-    title: "AI Content Generator",
+    title: "CRM Dashboard Platform",
     description:
-      "SaaS platform leveraging GPT models for automated content creation, SEO optimization, and multi-language translation.",
-    category: "AI/ML",
-    image_url: "/projects/ai-content.jpg",
-    tags: ["Python", "OpenAI", "FastAPI", "React"],
+      "Custom CRM with lead tracking, sales pipeline automation, reporting, and real-time analytics for enterprise clients.",
+    category: "CRM & Dashboards",
+    image_url: "",
+    tags: ["React", "TypeScript", "PostgreSQL", "Analytics"],
     live_url: "#",
-    github_url: "#",
-    featured: false,
-    created_at: "2024-04-05",
-    updated_at: "2024-04-05",
+    github_url: "",
+    featured: true,
+    created_at: "2025-04-12",
+    updated_at: "2025-04-12",
   },
   {
     id: "5",
-    title: "CI/CD Pipeline Builder",
+    title: "Clinic Booking System",
     description:
-      "Visual pipeline designer for automated deployment workflows with GitHub Actions, Docker, and real-time monitoring.",
-    category: "DevOps",
-    image_url: "/projects/cicd.jpg",
-    tags: ["Docker", "GitHub Actions", "Node.js", "React"],
+      "Online appointment scheduling with calendar sync, automated reminders, payment integration, and staff management.",
+    category: "Booking Systems",
+    image_url: "",
+    tags: ["Next.js", "Calendar API", "Stripe", "Automation"],
     live_url: "#",
-    github_url: "#",
+    github_url: "",
     featured: false,
-    created_at: "2024-05-12",
-    updated_at: "2024-05-12",
+    created_at: "2025-05-20",
+    updated_at: "2025-05-20",
   },
   {
     id: "6",
-    title: "Real-time Analytics Dashboard",
+    title: "Social Media Growth Campaign",
     description:
-      "Interactive analytics dashboard with live data streaming, custom chart builders, and automated reporting for enterprise clients.",
-    category: "Web Apps",
-    image_url: "/projects/analytics.jpg",
-    tags: ["React", "D3.js", "WebSocket", "PostgreSQL"],
+      "End-to-end digital marketing campaign with SEO, social ads, content strategy, and analytics-driven optimization.",
+    category: "Marketing",
+    image_url: "",
+    tags: ["SEO", "Social Ads", "Analytics", "Content Strategy"],
     live_url: "#",
-    github_url: "#",
+    github_url: "",
     featured: false,
-    created_at: "2024-06-08",
-    updated_at: "2024-06-08",
+    created_at: "2025-06-15",
+    updated_at: "2025-06-15",
+  },
+  {
+    id: "7",
+    title: "Loyalty Management System",
+    description:
+      "Points & rewards platform with tiered memberships, gamification, CRM integration, and customer behavior analytics.",
+    category: "CRM & Dashboards",
+    image_url: "",
+    tags: ["Loyalty", "Gamification", "CRM", "Analytics"],
+    live_url: "#",
+    github_url: "",
+    featured: false,
+    created_at: "2025-07-01",
+    updated_at: "2025-07-01",
+  },
+  {
+    id: "8",
+    title: "Gym & Fitness Platform",
+    description:
+      "Digital fitness system with member management, class scheduling, trainer dashboards, and subscription billing.",
+    category: "Booking Systems",
+    image_url: "",
+    tags: ["Member Mgmt", "Scheduling", "Billing", "Dashboards"],
+    live_url: "#",
+    github_url: "",
+    featured: false,
+    created_at: "2025-08-10",
+    updated_at: "2025-08-10",
   },
 ];
 
@@ -185,30 +242,30 @@ export const SAMPLE_PROJECTS: Project[] = [
 // ============================================
 export const TESTIMONIALS: Testimonial[] = [
   {
-    name: "Sarah Chen",
-    role: "CTO",
-    company: "TechVision Inc.",
+    name: "CEO, Retail Company",
+    role: "CEO",
+    company: "Retail Company",
     content:
-      "Exceptional work on our cloud migration project. The team delivered beyond expectations with zero downtime during the transition. Highly recommend!",
-    avatar: "/avatars/avatar-1.jpg",
+      "SYSPLAT transformed our business with a complete digital ecosystem. From website to CRM to AI automation — everything works seamlessly.",
+    avatar: "",
     rating: 5,
   },
   {
-    name: "Marcus Johnson",
-    role: "Product Manager",
-    company: "InnovateLab",
+    name: "Marketing Director",
+    role: "Marketing Director",
+    company: "",
     content:
-      "The attention to detail and code quality was outstanding. Our new platform runs 3x faster and handles 10x the traffic effortlessly.",
-    avatar: "/avatars/avatar-2.jpg",
+      "Their marketing and content platforms helped us triple our online engagement in 90 days.",
+    avatar: "",
     rating: 5,
   },
   {
-    name: "Emily Rodriguez",
-    role: "Founder",
-    company: "StartupFlow",
+    name: "Clinic Manager",
+    role: "Clinic Manager",
+    company: "",
     content:
-      "From concept to launch in just 6 weeks. The iterative development process kept us aligned and the final product exceeded all our requirements.",
-    avatar: "/avatars/avatar-3.jpg",
+      "The Appointment Plat and CRM Plat saved us hours of manual work every week.",
+    avatar: "",
     rating: 5,
   },
 ];
@@ -219,36 +276,36 @@ export const TESTIMONIALS: Testimonial[] = [
 export const BLOG_ARTICLES: BlogArticle[] = [
   {
     id: "1",
-    title: "Building Scalable APIs with Next.js Route Handlers",
+    title: "Why Every Business Needs a Digital Platform in 2026",
     excerpt:
-      "Learn how to design and implement production-ready API endpoints using Next.js App Router and best practices for error handling.",
-    image_url: "/blog/api-design.jpg",
-    tags: ["Next.js", "API", "TypeScript"],
-    date: "2024-03-15",
-    read_time: "8 min read",
-    slug: "scalable-apis-nextjs",
+      "Discover how modular digital platforms can accelerate growth, automate operations, and elevate your business presence.",
+    image_url: "",
+    tags: ["Business", "Digital Platforms", "Strategy"],
+    date: "2026-01-15",
+    read_time: "6 min read",
+    slug: "business-digital-platform-2026",
   },
   {
     id: "2",
-    title: "The Future of AI in Web Development",
+    title: "AI Chatbots: The Future of Customer Engagement",
     excerpt:
-      "Exploring how artificial intelligence is transforming the way we build, test, and deploy modern web applications.",
-    image_url: "/blog/ai-web.jpg",
-    tags: ["AI", "Web Dev", "Future Tech"],
-    date: "2024-03-01",
-    read_time: "6 min read",
-    slug: "ai-future-web-dev",
+      "How AI-powered chatbots are revolutionizing customer support, lead qualification, and sales automation across industries.",
+    image_url: "",
+    tags: ["AI", "Chatbots", "Automation"],
+    date: "2026-02-10",
+    read_time: "7 min read",
+    slug: "ai-chatbots-customer-engagement",
   },
   {
     id: "3",
-    title: "Mastering Cloud Architecture Patterns",
+    title: "Building a Loyalty Management System That Works",
     excerpt:
-      "A deep dive into microservices, event-driven architecture, and serverless patterns for building resilient cloud-native applications.",
-    image_url: "/blog/cloud-arch.jpg",
-    tags: ["Cloud", "Architecture", "AWS"],
-    date: "2024-02-18",
-    read_time: "10 min read",
-    slug: "cloud-architecture-patterns",
+      "A deep dive into points & rewards, gamification, and customer retention strategies that drive lifetime value.",
+    image_url: "",
+    tags: ["Loyalty", "CRM", "Retention"],
+    date: "2026-03-01",
+    read_time: "8 min read",
+    slug: "loyalty-management-system",
   },
 ];
 
@@ -259,7 +316,7 @@ export const SOCIAL_LINKS = {
   github: "https://github.com",
   linkedin: "https://linkedin.com",
   twitter: "https://twitter.com",
-  email: "contact@itportfolio.dev",
+  email: "contact@sysplat.com",
 };
 
 // ============================================
@@ -272,10 +329,10 @@ export const TECH_STACK = [
   "Node.js",
   "Python",
   "PostgreSQL",
-  "AWS",
-  "Docker",
-  "Kubernetes",
-  "TensorFlow",
-  "GraphQL",
-  "Redis",
+  "AI/ML",
+  "WordPress",
+  "Headless CMS",
+  "SEO",
+  "CRM",
+  "Automation",
 ];

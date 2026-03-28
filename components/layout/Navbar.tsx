@@ -43,7 +43,7 @@ export default function Navbar() {
         <a href="#home" onClick={(e) => { e.preventDefault(); handleNavClick("#home"); }} className="flex items-center">
           <img 
             src="/logo-black.svg" 
-            alt="SYPLAT" 
+            alt="SYSPLAT" 
             className="h-12 w-auto"
             style={{ maxWidth: '220px' }}
           />

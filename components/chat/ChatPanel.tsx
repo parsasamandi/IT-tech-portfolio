@@ -28,7 +28,7 @@ export default function ChatPanel({ onClose }: ChatPanelProps) {
       id: "welcome",
       role: "assistant",
       content:
-        "Hello! 👋 I'm the AI assistant for SYPLAT. I can help you with questions about our services, projects, or anything tech-related. How can I help you today?",
+        "Hello! 👋 I'm the AI assistant for SYSPLAT. I can help you with questions about our services, projects, or anything tech-related. How can I help you today?",
       timestamp: new Date(),
     },
   ]);

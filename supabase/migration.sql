@@ -187,8 +187,7 @@ ALTER TABLE settings
   ADD COLUMN IF NOT EXISTS working_hours    JSONB,
   ADD COLUMN IF NOT EXISTS hero_headline    TEXT,
   ADD COLUMN IF NOT EXISTS hero_subtitle    TEXT,
-  ADD COLUMN IF NOT EXISTS hero_typed_words TEXT[],
-  ADD COLUMN IF NOT EXISTS tech_stack_items TEXT[];
+  ADD COLUMN IF NOT EXISTS hero_typed_words TEXT[];
 
 
 -- 7c. Site settings (About + Contact + Hero) ----------------
@@ -210,7 +209,6 @@ UPDATE settings SET
   hero_headline     = 'Empowering Businesses',
   hero_subtitle     = 'SYSPLAT builds intelligent digital platforms that transform how your business operates, grows, and scales.',
   hero_typed_words  = ARRAY['Scalable Platforms', 'AI-Powered Solutions', 'Digital Growth Engines', 'Smart Automation', 'Unified Ecosystems'],
-  tech_stack_items  = ARRAY['React', 'Next.js', 'TypeScript', 'Node.js', 'Python', 'PostgreSQL', 'AWS', 'Docker', 'Kubernetes', 'TensorFlow', 'GraphQL', 'Redis'],
   updated_at        = now();
 
 -- Seed a row if the table is still empty.
@@ -219,7 +217,7 @@ INSERT INTO settings (
   about_title, about_paragraph1, about_paragraph2, about_stats,
   email, phone, location, working_hours,
   github_url, linkedin_url, twitter_url,
-  hero_headline, hero_subtitle, hero_typed_words, tech_stack_items
+  hero_headline, hero_subtitle, hero_typed_words
 )
 SELECT
   'SYSPLAT',
@@ -233,8 +231,7 @@ SELECT
   'https://github.com', 'https://linkedin.com', 'https://twitter.com',
   'Empowering Businesses',
   'SYSPLAT builds intelligent digital platforms that transform how your business operates, grows, and scales.',
-  ARRAY['Scalable Platforms', 'AI-Powered Solutions', 'Digital Growth Engines', 'Smart Automation', 'Unified Ecosystems'],
-  ARRAY['React', 'Next.js', 'TypeScript', 'Node.js', 'Python', 'PostgreSQL', 'AWS', 'Docker', 'Kubernetes', 'TensorFlow', 'GraphQL', 'Redis']
+  ARRAY['Scalable Platforms', 'AI-Powered Solutions', 'Digital Growth Engines', 'Smart Automation', 'Unified Ecosystems']
 WHERE NOT EXISTS (SELECT 1 FROM settings);
 
 

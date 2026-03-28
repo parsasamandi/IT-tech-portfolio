@@ -21,12 +21,12 @@ export default function Contact() {
     location: string;
     working_hours: { day: string; time: string }[];
   }>({
-    email: "contact@itportfolio.dev",
-    phone: "+1 (555) 123-4567",
-    location: "San Francisco, CA",
+    email: "contact@sysplat.com",
+    phone: "",
+    location: "Vancouver, BC",
     working_hours: [
       { day: "Mon - Fri", time: "9:00 AM - 6:00 PM" },
-      { day: "Saturday", time: "10:00 AM - 4:00 PM" },
+      { day: "Saturday", time: "Closed" },
       { day: "Sunday", time: "Closed" },
     ],
   });
@@ -45,12 +45,12 @@ export default function Contact() {
         
         if (data) {
           setContactData({
-            email: data.email || "contact@itportfolio.dev",
-            phone: data.phone || "+1 (555) 123-4567",
-            location: data.location || "San Francisco, CA",
+            email: data.email || "contact@sysplat.com",
+            phone: data.phone || "",
+            location: data.location || "Vancouver, BC",
             working_hours: data.working_hours || [
               { day: "Mon - Fri", time: "9:00 AM - 6:00 PM" },
-              { day: "Saturday", time: "10:00 AM - 4:00 PM" },
+              { day: "Saturday", time: "Closed" },
               { day: "Sunday", time: "Closed" },
             ],
           });
@@ -86,7 +86,7 @@ export default function Contact() {
 
   const infoItems = [
     { Icon: Mail, label: "Email", value: contactData.email, href: `mailto:${contactData.email}` },
-    { Icon: Phone, label: "Phone", value: contactData.phone, href: `tel:${contactData.phone.replace(/\s+/g, "")}` },
+    ...(contactData.phone ? [{ Icon: Phone, label: "Phone", value: contactData.phone, href: `tel:${contactData.phone.replace(/\s+/g, "")}` }] : []),
     { Icon: MapPin, label: "Location", value: contactData.location },
   ];
 
@@ -94,7 +94,7 @@ export default function Contact() {
     <section id="contact" className="relative py-24 bg-white border-t border-navy-100/50 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none opacity-[0.4] dot-pattern" />
       <div className="relative z-10 max-w-6xl mx-auto px-6 sm:px-8">
-        <SectionHeading title="Get in Touch" highlight="Touch" subtitle="Contact Us" />
+        <SectionHeading title="Let's Build Your Platform" highlight="Platform" subtitle="Contact Us" />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Info */}

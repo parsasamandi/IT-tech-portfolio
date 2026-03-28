@@ -19,7 +19,7 @@ export default function AdminSettings() {
   const [isLoading, setIsLoading] = useState(true);
   const [settingsId, setSettingsId] = useState<string | null>(null);
   const [settings, setSettings] = useState({
-    site_name: "SYPLAT",
+    site_name: "SYSPLAT",
     tagline: "Next-Generation Technology Solutions",
     about_text:
       "With over a decade of experience in technology solutions, we specialize in building high-performance applications that scale.",

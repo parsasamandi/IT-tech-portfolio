@@ -11,7 +11,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 /** System prompt for the AI assistant */
-const SYSTEM_PROMPT = `You are a helpful AI assistant for SYPLAT, a professional technology solutions and IT services company. You help visitors learn about services, projects, and technologies. Be concise, friendly, and professional. If asked about pricing or specific project details, suggest they use the contact form for a detailed consultation.`;
+const SYSTEM_PROMPT = `You are a helpful AI assistant for SYSPLAT, a next-generation technology company that builds intelligent digital platforms. SYSPLAT offers modular platforms: Business Plat, Digi Plat, Web Plat, Cont Plat, Social Plat, Chatbot Plat, Appointment Plat, AI Plat, CRM Plat, Gym Plat, and LMS Plat. You help visitors learn about these platforms and services. Be concise, friendly, and professional. If asked about pricing or specific project details, suggest they use the contact form for a detailed consultation.`;
 
 /** Mock responses for demo mode (when no OpenAI key is configured) */
 const MOCK_RESPONSES: Record<string, string> = {
@@ -27,7 +27,7 @@ const MOCK_RESPONSES: Record<string, string> = {
   contact:
     "You can reach us through the contact form on our website, email us at contact@itportfolio.dev, or call us at +1 (555) 123-4567. We typically respond within 24 hours!",
   hello:
-    "Hello there! 👋 Welcome to ITTech. I'm here to help you learn about our services and how we can help with your tech needs. What can I assist you with?",
+    "Hello there! 👋 Welcome to SYSPLAT — Intelligent Digital Platforms. I'm here to help you learn about our platforms and how we can accelerate your business growth. What can I assist you with?",
 };
 
 /**

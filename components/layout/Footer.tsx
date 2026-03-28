@@ -9,8 +9,8 @@ import { supabase } from "@/lib/supabase";
 export default function Footer() {
   const [settingsData, setSettingsData] = useState({
     email: SOCIAL_LINKS.email,
-    phone: "+1 (555) 123-4567",
-    location: "San Francisco, CA",
+    phone: "",
+    location: "Vancouver, BC",
     github_url: SOCIAL_LINKS.github,
     linkedin_url: SOCIAL_LINKS.linkedin,
     twitter_url: SOCIAL_LINKS.twitter,
@@ -31,8 +31,8 @@ export default function Footer() {
         if (data) {
           setSettingsData({
             email: data.email || SOCIAL_LINKS.email,
-            phone: data.phone || "+1 (555) 123-4567",
-            location: data.location || "San Francisco, CA",
+            phone: data.phone || "",
+            location: data.location || "Vancouver, BC",
             github_url: data.github_url || SOCIAL_LINKS.github,
             linkedin_url: data.linkedin_url || SOCIAL_LINKS.linkedin,
             twitter_url: data.twitter_url || SOCIAL_LINKS.twitter,
@@ -63,13 +63,13 @@ export default function Footer() {
             <div className="flex items-center mb-4">
               <img 
                 src="/logo-white.svg" 
-                alt="SYPLAT" 
+                alt="SYSPLAT" 
                 className="h-12 w-auto"
                 style={{ maxWidth: '200px' }}
               />
             </div>
             <p className="text-navy-300 text-sm leading-relaxed mb-5">
-              Delivering cutting-edge technology solutions with a focus on innovation, quality, and client success through SYPLAT's expertise.
+              SYSPLAT — Intelligent Digital Platforms. Business • Web • AI • CRM • Automation • Marketing. Everything your business needs in one unified ecosystem.
             </p>
             <div className="flex gap-2">
               {SOCIAL_ITEMS.map((item) => (
@@ -120,10 +120,12 @@ export default function Footer() {
                 <Mail className="w-4 h-4 text-crimson-400 mt-0.5 flex-shrink-0" />
                 <a href={`mailto:${settingsData.email}`} className="hover:text-crimson-400 transition-colors truncate max-w-full block">{settingsData.email}</a>
               </li>
+              {settingsData.phone && (
               <li className="flex items-start gap-2.5">
                 <span className="text-crimson-400 mt-0.5 flex-shrink-0 text-xs">📞</span>
                 <span>{settingsData.phone}</span>
               </li>
+              )}
               <li className="flex items-start gap-2.5">
                 <span className="text-crimson-400 mt-0.5 flex-shrink-0 text-xs">📍</span>
                 <span>{settingsData.location}</span>
@@ -136,7 +138,7 @@ export default function Footer() {
         <div className="border-t border-navy-700 pt-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-3">
             <p className="text-xs text-navy-400 flex items-center gap-1">
-              © {new Date().getFullYear()} SYPLAT. All rights reserved.
+              © {new Date().getFullYear()} SYSPLAT. All rights reserved.
             </p>
             <button onClick={scrollToTop}
               className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center

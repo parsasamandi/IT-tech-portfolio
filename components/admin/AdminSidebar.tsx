@@ -63,7 +63,7 @@ export default function AdminSidebar({
               className="text-lg font-bold text-text-primary"
               style={{ fontFamily: "var(--font-heading)" }}
             >
-              IT<span className="text-crimson-500">Tech</span>
+              SYS<span className="text-crimson-500">PLAT</span>
             </span>
           )}
         </Link>

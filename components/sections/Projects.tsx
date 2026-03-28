@@ -4,13 +4,13 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Github, Layers, Loader2 } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
-import { PROJECT_CATEGORIES } from "@/lib/constants";
+import { PROJECT_CATEGORIES, SAMPLE_PROJECTS } from "@/lib/constants";
 import { supabase } from "@/lib/supabase";
 import type { Project } from "@/lib/types";
 
 export default function Projects() {
   const [activeCategory, setActiveCategory] = useState("All");
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<Project[]>(SAMPLE_PROJECTS);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function Projects() {
           .order("created_at", { ascending: false });
         
         if (error) throw error;
-        if (data) setProjects(data as Project[]);
+        if (data && data.length > 0) setProjects(data as Project[]);
       } catch (err) {
         console.error("Error fetching projects:", err);
       } finally {
@@ -41,7 +41,51 @@ export default function Projects() {
   return (
     <section id="projects" className="section-padding bg-white">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        <SectionHeading title="Impactful Projects" highlight="Projects" subtitle="Portfolio" />
+        <SectionHeading title="Our Work" highlight="Work" subtitle="Portfolio" />
+
+        {/* Description */}
+        <div className="max-w-3xl mx-auto text-center mb-12">
+          <p className="text-navy-600 text-base leading-relaxed mb-4">
+            SYSPLAT delivers high-performance digital platforms across industries:
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm text-navy-700 mb-6">
+            <div className="flex items-center gap-2 justify-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-crimson-500" />
+              <span>Corporate websites</span>
+            </div>
+            <div className="flex items-center gap-2 justify-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-crimson-500" />
+              <span>E-commerce stores</span>
+            </div>
+            <div className="flex items-center gap-2 justify-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-crimson-500" />
+              <span>AI chatbots</span>
+            </div>
+            <div className="flex items-center gap-2 justify-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-crimson-500" />
+              <span>CRM dashboards</span>
+            </div>
+            <div className="flex items-center gap-2 justify-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-crimson-500" />
+              <span>Booking systems</span>
+            </div>
+            <div className="flex items-center gap-2 justify-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-crimson-500" />
+              <span>Loyalty platforms</span>
+            </div>
+            <div className="flex items-center gap-2 justify-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-crimson-500" />
+              <span>Social media campaigns</span>
+            </div>
+            <div className="flex items-center gap-2 justify-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-crimson-500" />
+              <span>Digital branding & content</span>
+            </div>
+          </div>
+          <p className="text-navy-600 text-sm italic">
+            Each project is built with precision, speed, and a focus on measurable results.
+          </p>
+        </div>
 
         {/* Filter */}
         <div className="flex flex-wrap justify-center gap-3 mb-16">
