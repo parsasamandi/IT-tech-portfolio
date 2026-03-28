@@ -31,6 +31,7 @@ export default function Services() {
   useEffect(() => {
     const fetchServices = async () => {
       try {
+        if (!supabase) return;
         const { data, error } = await supabase
           .from("services")
           .select("id, icon, title, description, display_order")

@@ -31,6 +31,7 @@ export default function Hero() {
   useEffect(() => {
     const fetchHeroData = async () => {
       try {
+        if (!supabase) return;
         const { data, error } = await supabase
           .from("settings")
           .select("hero_typed_words, hero_headline, hero_subtitle")
