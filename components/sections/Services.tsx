@@ -6,6 +6,7 @@ import { Globe, Server, Cloud, Smartphone, Shield, Brain, ArrowRight, Briefcase,
 import SectionHeading from "@/components/ui/SectionHeading";
 import { SERVICES } from "@/lib/constants";
 import { supabase } from "@/lib/supabase";
+import { useShouldReduceMotion } from "@/lib/hooks";
 
 interface Service {
   id: string;
@@ -27,6 +28,7 @@ export default function Services() {
       display_order: i + 1
     }))
   );
+  const reduce = useShouldReduceMotion();
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -63,7 +65,7 @@ export default function Services() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
-                transition={{ delay: i * 0.1, duration: 0.6, ease: "easeOut" }}
+                transition={{ delay: reduce ? 0 : i * 0.1, duration: reduce ? 0 : 0.6, ease: "easeOut" }}
                 className="group relative"
               >
                 {/* Background Gradient */}
@@ -85,7 +87,7 @@ export default function Services() {
                     <h3 className="text-2xl font-black text-navy-900 group-hover:text-navy-800 transition-colors duration-300 leading-tight" style={{ fontFamily: "var(--font-heading)" }}>
                       {service.title}
                     </h3>
-                    <p className="text-navy-600 leading-relaxed text-base group-hover:text-navy-700 transition-colors duration-300">
+                    <p className="text-navy-600 leading-relaxed text-base group-hover:text-navy-700 transition-colors duration-300 text-justify">
                       {service.description}
                     </p>
 

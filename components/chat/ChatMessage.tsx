@@ -31,7 +31,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
       <div
         className={`
           w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0
-          ${isUser ? "gradient-primary" : "bg-navy-700 border border-white/10"}
+          ${isUser ? "gradient-primary" : "bg-white border border-navy-100"}
         `}
       >
         {isUser ? (
@@ -45,10 +45,9 @@ export default function ChatMessage({ message }: ChatMessageProps) {
       <div
         className={`
           max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed
-          ${
-            isUser
-              ? "gradient-primary text-white rounded-br-md"
-              : "bg-white/5 text-text-primary border border-white/5 rounded-bl-md"
+          ${isUser
+            ? "gradient-primary text-white rounded-br-md"
+            : "bg-navy-50 border border-navy-100 text-navy-900 rounded-bl-md"
           }
         `}
       >

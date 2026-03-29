@@ -7,11 +7,13 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import { PROJECT_CATEGORIES, SAMPLE_PROJECTS } from "@/lib/constants";
 import { supabase } from "@/lib/supabase";
 import type { Project } from "@/lib/types";
+import { useShouldReduceMotion } from "@/lib/hooks";
 
 export default function Projects() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [projects, setProjects] = useState<Project[]>(SAMPLE_PROJECTS);
   const [isLoading, setIsLoading] = useState(true);
+  const reduce = useShouldReduceMotion();
 
   useEffect(() => {
     async function fetchProjects() {
@@ -118,7 +120,7 @@ export default function Projects() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  transition={{ duration: reduce ? 0 : 0.25, ease: "easeOut" }}
                   className="group rounded-3xl glass-card border border-navy-100 overflow-hidden card-shadow-hover transition-shadow duration-500 flex flex-col h-full bg-white"
                 >
                   {/* Image Area */}
@@ -161,7 +163,7 @@ export default function Projects() {
                     <h3 className="text-xl font-bold text-navy-900 mb-3 group-hover:text-crimson-600 transition-colors" style={{ fontFamily: "var(--font-heading)" }}>
                       {project.title}
                     </h3>
-                    <p className="text-navy-600 text-sm leading-relaxed mb-6 line-clamp-3">
+                    <p className="text-navy-600 text-sm leading-relaxed mb-6 line-clamp-3 text-justify h-[60px] overflow-hidden">
                       {project.description}
                     </p>
 

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import toast from "react-hot-toast";
+import { useShouldReduceMotion } from "@/lib/hooks";
 
 const inputCls = `w-full px-4 py-3 text-sm text-navy-900 bg-white rounded-xl
   border border-slate-200 outline-none
@@ -15,6 +16,7 @@ const inputCls = `w-full px-4 py-3 text-sm text-navy-900 bg-white rounded-xl
 export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
+  const reduce = useShouldReduceMotion();
   const [contactData, setContactData] = useState<{
     email: string;
     phone: string;
@@ -101,10 +103,10 @@ export default function Contact() {
           <div className="space-y-4">
             {infoItems.map(({ Icon, label, value, href }, i) => (
               <motion.div key={label}
-                initial={{ opacity: 0, y: 16 }}
+                initial={reduce ? false : { opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
-                transition={{ delay: i * 0.08, duration: 0.4 }}
+                transition={{ delay: reduce ? 0 : i * 0.08, duration: reduce ? 0 : 0.4 }}
                 className="card bg-navy-50/50 backdrop-blur-sm p-4 flex items-center gap-3"
               >
                 <div className="w-10 h-10 rounded-lg gradient-primary flex items-center justify-center flex-shrink-0
@@ -123,10 +125,10 @@ export default function Contact() {
             ))}
 
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
+              initial={reduce ? false : { opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: reduce ? 0 : 0.3 }}
               className="card bg-navy-50/50 backdrop-blur-sm p-4"
             >
               <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">Working Hours</h4>
@@ -143,7 +145,7 @@ export default function Contact() {
 
           {/* Form */}
           <motion.form
-            initial={{ opacity: 0, y: 24 }}
+            initial={reduce ? false : { opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             onSubmit={handleSubmit}

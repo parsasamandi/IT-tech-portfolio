@@ -7,10 +7,12 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import { TESTIMONIALS } from "@/lib/constants";
 import { supabase } from "@/lib/supabase";
 import type { Testimonial } from "@/lib/types";
+import { useShouldReduceMotion } from "@/lib/hooks";
 
 export default function Testimonials() {
   const [current, setCurrent] = useState(0);
   const [testimonials, setTestimonials] = useState<Testimonial[]>(TESTIMONIALS);
+  const reduce = useShouldReduceMotion();
 
   const fetchTestimonials = useCallback(async () => {
     try {
@@ -46,10 +48,10 @@ export default function Testimonials() {
   };
 
   useEffect(() => {
-    if (testimonials.length <= 1) return;
+    if (reduce || testimonials.length <= 1) return;
     const t = setInterval(next, 6000);
     return () => clearInterval(t);
-  }, [next, testimonials.length]);
+  }, [next, testimonials.length, reduce]);
 
   if (testimonials.length === 0) return null;
 
@@ -60,15 +62,15 @@ export default function Testimonials() {
       <div className="max-w-4xl mx-auto px-6 sm:px-8">
         <SectionHeading title="Client Testimonials" highlight="Testimonials" subtitle="What Clients Say" />
 
-        <div className="relative min-h-[280px]">
-          <AnimatePresence mode="wait">
+        <div className="relative h-[420px] sm:h-[400px] md:h-[360px]">
+          <AnimatePresence>
             <motion.div
               key={current}
-              initial={{ opacity: 0, x: 60 }}
+              initial={{ opacity: 0, x: reduce ? 0 : 20 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -60 }}
-              transition={{ duration: 0.4 }}
-              className="glass-card rounded-3xl p-8 md:p-10 text-center card-shadow-hover transition-all duration-500"
+              exit={{ opacity: 0, x: reduce ? 0 : -20 }}
+              transition={{ duration: reduce ? 0 : 0.4 }}
+              className="absolute inset-0 glass-card rounded-3xl p-8 md:p-10 text-center card-shadow-hover transition-all duration-500"
             >
               <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center mx-auto mb-6
                 shadow-sm shadow-crimson-500/15">
@@ -78,14 +80,11 @@ export default function Testimonials() {
               {/* Stars */}
               <div className="flex justify-center gap-1 mb-6">
                 {Array.from({ length: item.rating }).map((_, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: i * 0.08 }}>
-                    <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                  </motion.div>
+                  <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
                 ))}
               </div>
 
-              <p className="text-base md:text-lg text-navy-800 leading-relaxed mb-8 max-w-2xl mx-auto italic font-medium">
+              <p className="text-base md:text-lg text-navy-800 leading-relaxed mb-8 max-w-2xl mx-auto italic font-medium text-center md:text-justify min-h-[80px]">
                 &ldquo;{item.content}&rdquo;
               </p>
 

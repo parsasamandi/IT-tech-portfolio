@@ -5,8 +5,10 @@ import { motion } from "framer-motion";
 import { Github, Linkedin, Twitter, Mail, Heart, ArrowUp } from "lucide-react";
 import { NAV_LINKS, SERVICES, SOCIAL_LINKS } from "@/lib/constants";
 import { supabase } from "@/lib/supabase";
+import { useShouldReduceMotion } from "@/lib/hooks";
 
 export default function Footer() {
+  const reduce = useShouldReduceMotion();
   const [settingsData, setSettingsData] = useState({
     email: SOCIAL_LINKS.email,
     phone: "",
@@ -59,11 +61,11 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-6 sm:px-8 pt-14 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
           {/* Brand */}
-          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <motion.div initial={reduce ? false : { opacity: 0, y: 5 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <div className="flex items-center mb-4">
-              <img 
-                src="/logo-white.svg" 
-                alt="SYSPLAT" 
+              <img
+                src="/logo-white.svg"
+                alt="SYSPLAT"
                 className="h-12 w-auto"
                 style={{ maxWidth: '200px' }}
               />
@@ -83,7 +85,7 @@ export default function Footer() {
           </motion.div>
 
           {/* Quick Links */}
-          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}>
+          <motion.div initial={reduce ? false : { opacity: 0, y: 5 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}>
             <h3 className="text-sm font-semibold mb-4 uppercase tracking-wider text-white/90" style={{ fontFamily: "var(--font-heading)" }}>Quick Links</h3>
             <ul className="space-y-2">
               {NAV_LINKS.map((link) => (
@@ -98,7 +100,7 @@ export default function Footer() {
           </motion.div>
 
           {/* Services */}
-          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}>
+          <motion.div initial={reduce ? false : { opacity: 0, y: 5 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}>
             <h3 className="text-sm font-semibold mb-4 uppercase tracking-wider text-white/90" style={{ fontFamily: "var(--font-heading)" }}>Services</h3>
             <ul className="space-y-2">
               {SERVICES.map((s) => (
@@ -113,7 +115,7 @@ export default function Footer() {
           </motion.div>
 
           {/* Contact */}
-          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }}>
+          <motion.div initial={reduce ? false : { opacity: 0, y: 5 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }}>
             <h3 className="text-sm font-semibold mb-4 uppercase tracking-wider text-white/90" style={{ fontFamily: "var(--font-heading)" }}>Contact</h3>
             <ul className="space-y-3 text-sm text-navy-300">
               <li className="flex items-start gap-2.5">
@@ -121,10 +123,10 @@ export default function Footer() {
                 <a href={`mailto:${settingsData.email}`} className="hover:text-crimson-400 transition-colors truncate max-w-full block">{settingsData.email}</a>
               </li>
               {settingsData.phone && (
-              <li className="flex items-start gap-2.5">
-                <span className="text-crimson-400 mt-0.5 flex-shrink-0 text-xs">📞</span>
-                <span>{settingsData.phone}</span>
-              </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-crimson-400 mt-0.5 flex-shrink-0 text-xs">📞</span>
+                  <span>{settingsData.phone}</span>
+                </li>
               )}
               <li className="flex items-start gap-2.5">
                 <span className="text-crimson-400 mt-0.5 flex-shrink-0 text-xs">📍</span>

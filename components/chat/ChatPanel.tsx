@@ -110,10 +110,10 @@ export default function ChatPanel({ onClose }: ChatPanelProps) {
       exit={{ opacity: 0, y: 20, scale: 0.9 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
       className="fixed bottom-24 right-4 sm:right-6 w-[360px] max-w-[calc(100vw-32px)] h-[500px] 
-        bg-white rounded-2xl shadow-xl shadow-navy-900/10 border border-slate-200 flex flex-col z-50 overflow-hidden"
+        bg-white rounded-2xl shadow-xl shadow-navy-900/10 border border-navy-100 flex flex-col z-50 overflow-hidden"
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-navy-100">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl gradient-primary flex items-center justify-center">
             <Sparkles className="w-5 h-5 text-white" />
@@ -153,7 +153,7 @@ export default function ChatPanel({ onClose }: ChatPanelProps) {
       {/* Input */}
       <form
         onSubmit={handleSend}
-        className="px-4 py-3 border-t border-slate-100 flex items-center gap-2"
+        className="px-4 py-3 border-t border-navy-100 flex items-center gap-2"
       >
         <input
           ref={inputRef}
@@ -163,7 +163,7 @@ export default function ChatPanel({ onClose }: ChatPanelProps) {
           placeholder="Type a message..."
           disabled={isTyping}
           className="flex-1 px-4 py-2.5 text-sm text-navy-900 bg-slate-50 rounded-xl 
-            border border-slate-200 outline-none focus:border-crimson-400 focus:ring-2 focus:ring-crimson-100
+            border border-navy-100 outline-none focus:border-crimson-400 focus:ring-2 focus:ring-crimson-100
             placeholder:text-slate-400 disabled:opacity-50 transition-all"
         />
         <button

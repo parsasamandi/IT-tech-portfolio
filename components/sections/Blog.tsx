@@ -6,10 +6,12 @@ import { BookOpen, Calendar, Clock, ArrowRight, Loader2, Layers } from "lucide-r
 import SectionHeading from "@/components/ui/SectionHeading";
 import { supabase } from "@/lib/supabase";
 import type { BlogArticle } from "@/lib/types";
+import { useShouldReduceMotion } from "@/lib/hooks";
 
 export default function Blog() {
   const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const reduce = useShouldReduceMotion();
 
   useEffect(() => {
     async function fetchArticles() {
@@ -56,7 +58,7 @@ export default function Blog() {
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
-                transition={{ delay: i * 0.08, duration: 0.4 }}
+                transition={{ delay: reduce ? 0 : i * 0.08, duration: reduce ? 0 : 0.4 }}
                 className="group card overflow-hidden glass-card transition-all duration-300 card-shadow-hover hover:border-crimson-200 flex flex-col h-full bg-white"
               >
                 <div className="relative h-44 overflow-hidden bg-gradient-to-br from-navy-50 via-slate-50 to-crimson-50 shrink-0">
@@ -83,7 +85,7 @@ export default function Blog() {
                     group-hover:text-crimson-600 transition-colors" style={{ fontFamily: "var(--font-heading)" }}>
                     {post.title}
                   </h3>
-                  <p className="text-sm text-navy-600 leading-relaxed mb-6 line-clamp-3">
+                  <p className="text-sm text-navy-600 leading-relaxed mb-6 line-clamp-3 text-justify h-[54px] overflow-hidden">
                     {post.excerpt}
                   </p>
 

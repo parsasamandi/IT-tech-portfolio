@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { supabase } from "@/lib/supabase";
+import { useShouldReduceMotion } from "@/lib/hooks";
 
 export default function About() {
   const [aboutData, setAboutData] = useState<{
@@ -17,7 +18,7 @@ export default function About() {
     paragraph2: "We combine strategic business development, high-end web engineering, AI-powered automation, digital marketing excellence, customer engagement systems, and enterprise-grade CRM and LMS solutions. Our mission is simple: build intelligent platforms that transform businesses into digital powerhouses."
   });
 
-  const shouldReduceMotion = useReducedMotion();
+  const reduce = useShouldReduceMotion();
 
   useEffect(() => {
     async function fetchSettings() {
@@ -63,7 +64,7 @@ export default function About() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: shouldReduceMotion ? 0 : 0.7, ease: "easeOut" }}
+          transition={{ duration: reduce ? 0 : 0.7, ease: "easeOut" }}
           className="max-w-4xl mx-auto"
         >
           {/* Company Badge */}
@@ -71,8 +72,8 @@ export default function About() {
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ delay: shouldReduceMotion ? 0 : 0.2, duration: shouldReduceMotion ? 0 : 0.5 }}
-            className="inline-flex items-center gap-2 mb-10 px-5 py-2.5 rounded-full glass-card border border-crimson-100/60 shadow-sm"
+            transition={{ delay: reduce ? 0 : 0.2, duration: reduce ? 0 : 0.5 }}
+            className="flex mx-auto w-fit items-center gap-2 mb-10 px-5 py-2.5 rounded-full glass-card border border-crimson-100/60 shadow-sm"
           >
             <Sparkles className="w-4 h-4 text-crimson-500" aria-hidden="true" />
             <span className="text-sm font-semibold text-navy-700 tracking-wide">Next-Generation IT Company</span>
@@ -84,10 +85,10 @@ export default function About() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: shouldReduceMotion ? 0 : 0.3, duration: shouldReduceMotion ? 0 : 0.6 }}
+              transition={{ delay: reduce ? 0 : 0.3, duration: reduce ? 0 : 0.6 }}
               className="glass-card border border-navy-100/50 rounded-3xl p-8 md:p-10 shadow-md hover:shadow-xl transition-shadow duration-500"
             >
-              <p className="text-lg md:text-xl leading-relaxed text-navy-700 font-medium">
+              <p className="text-lg md:text-xl leading-relaxed text-navy-700 font-medium text-justify">
                 {aboutData.paragraph1}
               </p>
             </motion.div>
@@ -96,12 +97,12 @@ export default function About() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: shouldReduceMotion ? 0 : 0.4, duration: shouldReduceMotion ? 0 : 0.6 }}
+              transition={{ delay: reduce ? 0 : 0.4, duration: reduce ? 0 : 0.6 }}
               className="relative overflow-hidden rounded-3xl"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-crimson-500/5 via-transparent to-navy-500/5" aria-hidden="true" />
               <div className="relative border-l-4 border-crimson-500 pl-8 md:pl-10 py-8 md:py-10 pr-8 md:pr-10 glass-card border border-navy-100/30 shadow-md">
-                <p className="text-base md:text-lg leading-relaxed text-navy-600 font-medium">
+                <p className="text-base md:text-lg leading-relaxed text-navy-600 font-medium text-justify">
                   {aboutData.paragraph2}
                 </p>
               </div>
@@ -113,7 +114,7 @@ export default function About() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: shouldReduceMotion ? 0 : 0.6, duration: shouldReduceMotion ? 0 : 0.6 }}
+            transition={{ delay: reduce ? 0 : 0.6, duration: reduce ? 0 : 0.6 }}
             className="pt-12 text-center"
           >
             <a

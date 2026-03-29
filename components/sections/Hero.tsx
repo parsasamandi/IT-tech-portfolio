@@ -62,6 +62,9 @@ export default function Hero() {
         const next = word.substring(0, displayText.length + 1);
         setDisplayText(next);
         if (next === word) {
+          // On mobile: stop after first word fully typed — no cycling
+          // prevents layout jumps caused by words of different lengths
+          if (shouldReduceMotion && currentWord === 0) return;
           setIsPaused(true);
           setTimeout(() => { setIsPaused(false); setIsDeleting(true); }, 2000);
         }
@@ -75,14 +78,14 @@ export default function Hero() {
       }
     }, speed);
     return () => clearTimeout(timeout);
-  }, [displayText, isDeleting, currentWord, isPaused, typedWords]);
+  }, [displayText, isDeleting, currentWord, isPaused, typedWords, shouldReduceMotion]);
 
   return (
     <section id="home" className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-navy-50 px-6">
       {/* Background Layer */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 dot-pattern opacity-30" />
-        
+
         {/* Background Tech Terms - Repositioned for better balance */}
         <div className="absolute inset-0 overflow-hidden opacity-[0.03]">
           <div className="absolute top-[25%] right-[5%] text-6xl md:text-8xl font-black text-navy-900 rotate-[25deg] select-none">Business</div>
@@ -92,7 +95,7 @@ export default function Hero() {
           <div className="absolute top-[35%] right-[60%] text-4xl md:text-6xl font-black text-navy-900 rotate-[8deg] select-none">Marketing</div>
           <div className="absolute bottom-[40%] right-[35%] text-5xl md:text-7xl font-black text-navy-900 rotate-[-18deg] select-none">CRM</div>
         </div>
-        
+
         {/* Blur orbs - repositioned for better visual flow */}
         <div className="hidden md:block absolute top-[20%] right-[15%] w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-crimson-100/30 rounded-full blur-[60px] md:blur-[120px] hero-orb" />
         <div className="hidden md:block absolute bottom-[15%] left-[10%] w-[350px] md:w-[600px] h-[350px] md:h-[600px] bg-navy-100/40 rounded-full blur-[70px] md:blur-[140px] hero-orb" style={{ animationDelay: "2s" }} />
@@ -103,7 +106,7 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: shouldReduceMotion ? 0 : 0.5 }}
           className="inline-flex items-center gap-2 mb-10 px-5 py-2.5 rounded-full glass-card border border-white/60 shadow-md text-navy-900"
         >
           <Sparkles className="w-4 h-4 text-crimson-600" />
@@ -113,7 +116,7 @@ export default function Hero() {
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          transition={{ duration: shouldReduceMotion ? 0 : 0.8, delay: shouldReduceMotion ? 0 : 0.2 }}
           className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-navy-900 leading-[1.05] tracking-tight mb-8"
           style={{ fontFamily: "var(--font-heading)" }}
         >
@@ -135,7 +138,7 @@ export default function Hero() {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+          transition={{ duration: shouldReduceMotion ? 0 : 0.8, delay: shouldReduceMotion ? 0 : 0.4 }}
           className="max-w-2xl mx-auto text-lg md:text-xl text-navy-600 leading-relaxed mb-12"
         >
           {subtitle}
@@ -144,7 +147,7 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+          transition={{ duration: shouldReduceMotion ? 0 : 0.8, delay: shouldReduceMotion ? 0 : 0.6 }}
           className="flex flex-col sm:flex-row items-center gap-4"
         >
           <a href="#projects" className="px-10 py-4 text-base font-bold text-white rounded-2xl gradient-primary gradient-primary-hover shadow-xl shadow-crimson-600/30 hover:-translate-y-1 transition-all duration-300 flex items-center gap-2">

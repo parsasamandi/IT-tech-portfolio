@@ -10,17 +10,14 @@ export function useIsMobile(): boolean {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // Check screen width
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
 
-    // Initial check
-    checkMobile();
-
-    // Listen for resize
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    // Debounce resize to avoid excessive re-renders
+    let timer: ReturnType<typeof setTimeout>;
+    const onResize = () => { clearTimeout(timer); timer = setTimeout(check, 150); };
+    window.addEventListener("resize", onResize);
+    return () => { window.removeEventListener("resize", onResize); clearTimeout(timer); };
   }, []);
 
   return isMobile;
