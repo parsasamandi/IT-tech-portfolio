@@ -45,45 +45,6 @@ export default function Projects() {
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <SectionHeading title="Our Work" highlight="Work" subtitle="Portfolio" />
 
-        {/* Description */}
-        <div className="max-w-3xl mx-auto mb-16">
-          <div className="text-center mb-12">
-            <p className="text-navy-600 text-lg leading-relaxed mb-2">
-              SYSPLAT delivers high-performance digital platforms across industries
-            </p>
-            <div className="h-1 w-16 bg-gradient-to-r from-crimson-500 to-crimson-400 mx-auto rounded-full opacity-60" />
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-            {[
-              "Corporate websites",
-              "E-commerce stores",
-              "AI chatbots",
-              "CRM dashboards",
-              "Booking systems",
-              "Loyalty platforms",
-              "Social media campaigns",
-              "Digital branding & content"
-            ].map((item, i) => (
-              <div
-                key={item}
-                className="group flex flex-col items-center gap-3 p-4 rounded-2xl transition-all duration-300 hover:bg-navy-50/50"
-              >
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-crimson-500 to-crimson-600 flex items-center justify-center shadow-md group-hover:shadow-crimson-500/40 transition-shadow">
-                  <span className="w-2 h-2 rounded-full bg-white" />
-                </div>
-                <span className="text-sm font-semibold text-navy-700 text-center group-hover:text-navy-900 transition-colors">
-                  {item}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex items-center justify-center">
-            <div className="h-px bg-gradient-to-r from-transparent via-navy-200 to-transparent w-24 mx-auto" />
-          </div>
-        </div>
-
         {/* Filter */}
         <div className="flex flex-wrap justify-center gap-3 mb-16">
           {PROJECT_CATEGORIES.map((cat) => (
