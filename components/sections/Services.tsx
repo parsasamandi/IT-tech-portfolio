@@ -52,7 +52,7 @@ export default function Services() {
   }, []);
 
   return (
-    <section id="services" className="section-padding bg-gradient-to-br from-slate-50 via-white to-navy-50/30 relative overflow-hidden">
+    <section id="services" className="section-padding bg-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 relative">
         <SectionHeading title="Our Platforms" highlight="Platforms" subtitle="What We Build" />
 

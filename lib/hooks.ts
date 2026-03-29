@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 
 /**
  * Custom hook to detect mobile devices
- * Returns true on mobile (< 768px) or when user prefers reduced motion
+ * Returns true on mobile (< 768px)
  */
 export function useIsMobile(): boolean {
   const [isMobile, setIsMobile] = useState(false);
@@ -43,10 +43,10 @@ export function usePrefersReducedMotion(): boolean {
 
 /**
  * Combined hook: returns true if animations should be reduced
- * (either mobile device OR user prefers reduced motion)
+ * Only respects user's OS prefers-reduced-motion setting
+ * Mobile devices get FULL animations (entrance, staggered delays, transitions)
+ * Only Hero typing cycle respects this hook to prevent mobile layout jumps
  */
 export function useShouldReduceMotion(): boolean {
-  const isMobile = useIsMobile();
-  const prefersReduced = usePrefersReducedMotion();
-  return isMobile || prefersReduced;
+  return usePrefersReducedMotion();
 }
