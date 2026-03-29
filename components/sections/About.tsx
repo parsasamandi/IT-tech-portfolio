@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowUpRight, Sparkles, Briefcase, Globe, Zap, Megaphone, Users, Cloud } from "lucide-react";
+import { ArrowUpRight, Sparkles, Briefcase, Globe, Zap, Megaphone, Users, MessageSquare } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { supabase } from "@/lib/supabase";
 import { useShouldReduceMotion } from "@/lib/hooks";
@@ -12,8 +12,8 @@ const PILLARS = [
   { label: "Web Engineering", icon: Globe },
   { label: "AI Automation", icon: Zap },
   { label: "Digital Marketing", icon: Megaphone },
+  { label: "Customer Engagement", icon: MessageSquare },
   { label: "CRM & LMS", icon: Users },
-  { label: "Cloud Infrastructure", icon: Cloud },
 ];
 
 export default function About() {

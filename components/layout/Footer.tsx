@@ -71,7 +71,7 @@ export default function Footer() {
               />
             </div>
             <p className="text-navy-300 text-sm leading-relaxed mb-5">
-              SYSPLAT — Intelligent Digital Platforms. Business • Web • AI • CRM • Automation • Marketing. Everything your business needs in one unified ecosystem.
+              SYSPLAT — Intelligent Digital Platforms. Business • Web • AI • CRM • Automation • Marketing.
             </p>
             <div className="flex gap-2">
               {SOCIAL_ITEMS.map((item) => (

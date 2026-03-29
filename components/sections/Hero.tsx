@@ -15,7 +15,7 @@ const DEFAULT_TYPED_WORDS = [
 ];
 
 const DEFAULT_HEADLINE = "Empowering Businesses";
-const DEFAULT_SUBTITLE = "SYSPLAT builds intelligent digital platforms that transform how your business operates, grows, and scales.";
+const DEFAULT_SUBTITLE = "SYSPLAT builds scalable, modern, and AI-powered platforms that accelerate growth, automate operations, and elevate your digital presence.";
 
 export default function Hero() {
   const [currentWord, setCurrentWord] = useState(0);
