@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown, Sparkles } from "lucide-react";
-import { useShouldReduceMotion } from "@/lib/hooks";
+import { useShouldReduceMotion, useIsMobile } from "@/lib/hooks";
 import { supabase } from "@/lib/supabase";
 
 const DEFAULT_TYPED_WORDS = [
@@ -26,6 +26,7 @@ export default function Hero() {
   const [headline, setHeadline] = useState(DEFAULT_HEADLINE);
   const [subtitle, setSubtitle] = useState(DEFAULT_SUBTITLE);
   const shouldReduceMotion = useShouldReduceMotion();
+  const isMobile = useIsMobile();
 
   // Fetch hero data from database
   useEffect(() => {
@@ -64,7 +65,7 @@ export default function Hero() {
         if (next === word) {
           // On mobile: stop after first word fully typed — no cycling
           // prevents layout jumps caused by words of different lengths
-          if (shouldReduceMotion && currentWord === 0) return;
+          if (isMobile) return;
           setIsPaused(true);
           setTimeout(() => { setIsPaused(false); setIsDeleting(true); }, 2000);
         }
@@ -78,7 +79,7 @@ export default function Hero() {
       }
     }, speed);
     return () => clearTimeout(timeout);
-  }, [displayText, isDeleting, currentWord, isPaused, typedWords, shouldReduceMotion]);
+  }, [displayText, isDeleting, currentWord, isPaused, typedWords, isMobile]);
 
   return (
     <section id="home" className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-navy-50 px-6">
@@ -130,7 +131,7 @@ export default function Hero() {
               {i < headline.split(" ").length - 1 && " "}
             </span>
           ))}<br />
-          <span className="inline-block gradient-text-hero min-h-[1em]">
+          <span className="inline-block gradient-text-hero min-h-[2.2em] sm:min-h-[1.15em]">
             {displayText}<span className="typing-cursor" />
           </span>
         </motion.h1>
