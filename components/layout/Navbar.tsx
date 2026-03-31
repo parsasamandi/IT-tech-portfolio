@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { NAV_LINKS } from "@/lib/constants";
+import { getCalApi } from "@calcom/embed-react";
+
+const CAL_LINK = process.env.NEXT_PUBLIC_CAL_LINK || "";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -26,6 +29,15 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Preload Cal.com embed script when a booking link is configured
+  useEffect(() => {
+    if (!CAL_LINK) return;
+    (async () => {
+      const cal = await getCalApi({ namespace: "booking" });
+      cal("ui", { hideEventTypeDetails: false, layout: "month_view" });
+    })();
+  }, []);
+
   const handleNavClick = (href: string) => {
     setIsMobileOpen(false);
     const el = document.getElementById(href.replace("#", ""));
@@ -41,9 +53,9 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
         {/* Logo */}
         <a href="#home" onClick={(e) => { e.preventDefault(); handleNavClick("#home"); }} className="flex items-center">
-          <img 
-            src="/logo-black.svg" 
-            alt="SYSPLAT" 
+          <img
+            src="/logo-black.svg"
+            alt="SYSPLAT"
             className="h-12 w-auto"
             style={{ maxWidth: '220px' }}
           />
@@ -69,13 +81,24 @@ export default function Navbar() {
 
         {/* CTA */}
         <div className="hidden md:block">
-          <a
-            href="#contact"
-            onClick={(e) => { e.preventDefault(); handleNavClick("#contact"); }}
-            className="px-6 py-3 text-sm font-bold text-white rounded-xl gradient-primary shadow-lg shadow-crimson-600/20 hover:scale-[1.02] transition-transform"
-          >
-            Get Started
-          </a>
+          {CAL_LINK ? (
+            <button
+              data-cal-link={CAL_LINK}
+              data-cal-namespace="booking"
+              data-cal-config='{"layout":"month_view"}'
+              className="px-6 py-3 text-sm font-bold text-white rounded-xl gradient-primary shadow-lg shadow-crimson-600/20 hover:scale-[1.02] transition-transform cursor-pointer"
+            >
+              Get Started
+            </button>
+          ) : (
+            <a
+              href="#contact"
+              onClick={(e) => { e.preventDefault(); handleNavClick("#contact"); }}
+              className="px-6 py-3 text-sm font-bold text-white rounded-xl gradient-primary shadow-lg shadow-crimson-600/20 hover:scale-[1.02] transition-transform"
+            >
+              Get Started
+            </a>
+          )}
         </div>
 
         {/* Mobile Toggle */}
@@ -104,6 +127,26 @@ export default function Navbar() {
                   {link.label}
                 </a>
               ))}
+              <div className="pt-2">
+                {CAL_LINK ? (
+                  <button
+                    data-cal-link={CAL_LINK}
+                    data-cal-namespace="booking"
+                    data-cal-config='{"layout":"month_view"}'
+                    className="w-full px-4 py-3 text-base font-bold text-white rounded-xl gradient-primary shadow-lg shadow-crimson-600/20 cursor-pointer"
+                  >
+                    Get Started
+                  </button>
+                ) : (
+                  <a
+                    href="#contact"
+                    onClick={(e) => { e.preventDefault(); handleNavClick("#contact"); }}
+                    className="block px-4 py-3 text-base font-bold text-white text-center rounded-xl gradient-primary shadow-lg shadow-crimson-600/20"
+                  >
+                    Get Started
+                  </a>
+                )}
+              </div>
             </div>
           </motion.div>
         )}
