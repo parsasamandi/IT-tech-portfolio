@@ -4,7 +4,7 @@
  */
 import { SOCIAL_LINKS } from "@/lib/constants";
 
-const CONTACT_FROM = process.env.CONTACT_FROM_EMAIL || "SYSPLAT <hello@sysplat.com>";
+const CONTACT_FROM = process.env.CONTACT_FROM_EMAIL || "SYSPLAT <contact@sysplat.com>";
 const CONTACT_TO = process.env.CONTACT_TO_EMAIL || SOCIAL_LINKS.email;
 
 function escapeHtml(value: string): string {
