@@ -3,13 +3,14 @@
  *
  * Handles contact form submissions.
  * - Validates required fields
+ * - Emails sysplatco@gmail.com via Resend (if configured)
  * - Stores message in Supabase (if configured)
- * - Returns success response
  *
  * Request body: { name, email, subject, message }
  * Response:     { success: boolean, message: string }
  */
 import { NextRequest, NextResponse } from "next/server";
+import { sendContactEmail } from "@/lib/email";
 import { createServerClient } from "@/lib/supabase";
 
 export const runtime = 'edge';
@@ -44,30 +45,47 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ========== STORE IN DATABASE ==========
+    const trimmed = {
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      subject: subject.trim(),
+      message: message.trim(),
+    };
+
+    // ========== EMAIL + STORE ==========
+    const emailResult = await sendContactEmail(trimmed);
+    if (!emailResult.sent) {
+      console.error("Contact email not sent:", emailResult.error);
+    }
+
     const supabase = createServerClient();
+    let stored = false;
 
     if (supabase) {
       const { error } = await supabase.from("messages").insert({
-        name: name.trim(),
-        email: email.trim().toLowerCase(),
-        subject: subject.trim(),
-        message: message.trim(),
+        ...trimmed,
         is_read: false,
       });
 
       if (error) {
         console.error("Supabase insert error:", error);
-        // Don't fail — still return success since the message was received
+      } else {
+        stored = true;
       }
     } else {
-      // Log to console in demo mode
       console.log("📧 Contact form submission (demo mode):", {
-        name,
-        email,
-        subject,
-        message: message.substring(0, 100) + "...",
+        name: trimmed.name,
+        email: trimmed.email,
+        subject: trimmed.subject,
+        message: trimmed.message.substring(0, 100) + "...",
       });
+    }
+
+    if (!emailResult.sent && !stored && (process.env.RESEND_API_KEY || supabase)) {
+      return NextResponse.json(
+        { error: "Failed to send message. Please try again." },
+        { status: 502 }
+      );
     }
 
     return NextResponse.json({
