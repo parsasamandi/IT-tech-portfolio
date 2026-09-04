@@ -1,10 +1,11 @@
 /**
  * Contact-form email via Resend (Edge-safe fetch).
- * From must be on the verified sysplat.com domain; Gmail is the destination only.
+ * From must be on the verified sysplat.com domain; PLATFORM_CONTACT_EMAIL is the public inbox.
  */
-import { SOCIAL_LINKS } from "@/lib/constants";
+import { PLATFORM_CONTACT_EMAIL, SOCIAL_LINKS } from "@/lib/constants";
 
-const CONTACT_FROM = process.env.CONTACT_FROM_EMAIL || "SYSPLAT <contact@sysplat.com>";
+const CONTACT_FROM =
+  process.env.CONTACT_FROM_EMAIL || `SYSPLAT <${PLATFORM_CONTACT_EMAIL}>`;
 const CONTACT_TO = process.env.CONTACT_TO_EMAIL || SOCIAL_LINKS.email;
 
 function escapeHtml(value: string): string {

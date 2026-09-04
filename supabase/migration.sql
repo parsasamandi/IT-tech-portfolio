@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS settings (
 
 -- Insert default settings row
 INSERT INTO settings (site_name, tagline, email)
-VALUES ('ITTech Portfolio', 'Next-Generation Technology Solutions', 'sysplatco@gmail.com')
+VALUES ('ITTech Portfolio', 'Next-Generation Technology Solutions', 'support@sysplat.com')
 ON CONFLICT DO NOTHING;
 
 -- ==========================================
@@ -266,7 +266,7 @@ UPDATE settings SET
   about_title       = 'About SYSPLAT',
   about_paragraph1  = 'SYSPLAT is a next-generation Information Technology company specializing in modular digital platforms designed to help businesses grow, automate, and scale. Each "Plat" represents a dedicated platform built with precision, performance, and modern engineering.',
   about_paragraph2  = 'We combine strategic business development, high-end web engineering, AI-powered automation, digital marketing excellence, customer engagement systems, and enterprise-grade CRM and LMS solutions. Our mission is simple: build intelligent platforms that transform businesses into digital powerhouses.',
-  email             = 'sysplatco@gmail.com',
+  email             = 'support@sysplat.com',
   phone             = '',
   location          = 'Vancouver, BC',
   working_hours     = '[{"day":"Mon - Fri","time":"9:00 AM - 6:00 PM"},{"day":"Saturday","time":"Closed"},{"day":"Sunday","time":"Closed"}]'::jsonb,
@@ -292,7 +292,7 @@ SELECT
   'About SYSPLAT',
   'SYSPLAT is a next-generation Information Technology company specializing in modular digital platforms designed to help businesses grow, automate, and scale. Each "Plat" represents a dedicated platform built with precision, performance, and modern engineering.',
   'We combine strategic business development, high-end web engineering, AI-powered automation, digital marketing excellence, customer engagement systems, and enterprise-grade CRM and LMS solutions. Our mission is simple: build intelligent platforms that transform businesses into digital powerhouses.',
-  'sysplatco@gmail.com', '', 'Vancouver, BC',
+  'support@sysplat.com', '', 'Vancouver, BC',
   '[{"day":"Mon - Fri","time":"9:00 AM - 6:00 PM"},{"day":"Saturday","time":"Closed"},{"day":"Sunday","time":"Closed"}]'::jsonb,
   'https://github.com', 'https://linkedin.com', 'https://twitter.com',
   'Empowering Businesses',

@@ -310,13 +310,20 @@ export const BLOG_ARTICLES: BlogArticle[] = [
 ];
 
 // ============================================
+// Contact (single source of truth)
+// Cloudflare Email Routing: support@sysplat.com → ops mailbox
+// Change PLATFORM_CONTACT_EMAIL once; UI + contact form defaults follow.
+// ============================================
+export const PLATFORM_CONTACT_EMAIL = "support@sysplat.com";
+
+// ============================================
 // Social Links
 // ============================================
 export const SOCIAL_LINKS = {
   github: "https://github.com",
   linkedin: "https://linkedin.com",
   twitter: "https://twitter.com",
-  email: "sysplatco@gmail.com",
+  email: PLATFORM_CONTACT_EMAIL,
 };
 
 // ============================================

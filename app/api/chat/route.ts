@@ -9,6 +9,7 @@
  * Response:     { message: string }
  */
 import { NextRequest, NextResponse } from "next/server";
+import { PLATFORM_CONTACT_EMAIL } from "@/lib/constants";
 
 export const runtime = 'edge';
 
@@ -27,7 +28,7 @@ const MOCK_RESPONSES: Record<string, string> = {
     "Our pricing varies based on project scope and complexity. I'd recommend filling out our contact form with your project details, and our team will provide a detailed quote within 24 hours.",
   tech: "Our tech stack includes React, Next.js, TypeScript, Node.js, Python, PostgreSQL, AWS, Docker, Kubernetes, and more. We choose the best technologies for each project's needs.",
   contact:
-    "You can reach us through the contact form on our website, email us at sysplatco@gmail.com, or call us at +1 (555) 123-4567. We typically respond within 24 hours!",
+    `You can reach us through the contact form on our website, email us at ${PLATFORM_CONTACT_EMAIL}, or call us at +1 (555) 123-4567. We typically respond within 24 hours!`,
   hello:
     "Hello there! 👋 Welcome to SYSPLAT — Intelligent Digital Platforms. I'm here to help you learn about our platforms and how we can accelerate your business growth. What can I assist you with?",
 };

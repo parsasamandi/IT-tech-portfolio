@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import { Save, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { supabase } from "@/lib/supabase";
+import { PLATFORM_CONTACT_EMAIL } from "@/lib/constants";
 
 export default function AdminSettings() {
   const [isSaving, setIsSaving] = useState(false);
@@ -26,7 +27,7 @@ export default function AdminSettings() {
     about_title: "Driving Digital Transformation",
     about_paragraph1: "With over a decade of experience in technology solutions, we specialize in building high-performance applications that scale. Our team combines deep technical expertise with creative problem-solving.",
     about_paragraph2: "From startups to enterprise clients, we've helped organizations across industries modernize their tech stacks, optimize workflows, and launch products that users love.",
-    email: "sysplatco@gmail.com",
+    email: PLATFORM_CONTACT_EMAIL,
     phone: "+1 (555) 123-4567",
     location: "San Francisco, CA",
     github_url: "https://github.com",

@@ -3,7 +3,7 @@
  *
  * Handles contact form submissions.
  * - Validates required fields
- * - Emails sysplatco@gmail.com via Resend (if configured)
+ * - Emails support@sysplat.com via Resend (if configured; Cloudflare routes to ops mailbox)
  * - Stores message in Supabase (if configured)
  *
  * Request body: { name, email, subject, message }
